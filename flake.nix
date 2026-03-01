@@ -33,6 +33,7 @@
             chlsdl.packages.${system}.default
             xorg.libX11.dev
             libxmu.dev
+            pcre2.dev
           ];
           hardeningDisable = [ "all" ];
         };
@@ -46,6 +47,7 @@
             chlsdl.packages.${system}.default
             xorg.libX11.dev
             libxmu.dev
+            pcre2.dev
           ];
 
           buildPhase = ''
