@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <chlsdl/common/common.h>
 #include <chlsdl/common/util/util.h>
+#include <chlsdl/macros.h>
 #include <chlsdl/module.h>
 #include <stdlib.h>
 #define PCRE2_CODE_UNIT_WIDTH 8
@@ -12,6 +13,7 @@
 
 struct module g_libdanbooru = {
     danbooru_deinit,
+    danbooru_func,
 };
 
 static const char * module_downloads_dir;
@@ -45,4 +47,25 @@ danbooru_deinit()
     free((char *)module_downloads_dir);
     free(g_libdanbooru.regex.md);
     free(g_libdanbooru.regex.pattern);
+}
+
+static char *
+get_line_from_string(const char * s)
+{
+    const char * nl = strchr(s, '\n');
+    if (!nl)
+        return NULL;
+
+    char * r = strndup(s, nl - s);
+    assert(r);
+    return r;
+}
+
+void
+danbooru_func(void * vargp)
+{
+    chlsdl_defer char * orig_data = strdup(vargp);
+    assert(orig_data);
+
+    char * data = orig_data + strlen(get_line_from_string(orig_data));
 }
