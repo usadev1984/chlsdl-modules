@@ -1,4 +1,4 @@
-LIBS = -lchlsdl-common
+LIBS = -lchlsdl-common -lpcre2-8
 
 CFLAGS = -std=gnu23 -fPIC -Wall -Wextra ${INCS}
 
