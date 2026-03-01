@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <chlsdl/common/common.h>
+#include <chlsdl/common/util/util.h>
 #include <chlsdl/module.h>
 #include <stdlib.h>
 #define PCRE2_CODE_UNIT_WIDTH 8
@@ -12,6 +13,8 @@
 struct module g_libdanbooru = {
     danbooru_deinit,
 };
+
+static const char * module_downloads_dir;
 
 const struct module *
 danbooru_init(const struct chlsdl_data * cdata)
@@ -27,6 +30,11 @@ danbooru_init(const struct chlsdl_data * cdata)
         g_libdanbooru.regex.pattern, NULL);
     assert(g_libdanbooru.regex.md);
 
+    module_downloads_dir = svconcat("%s/danbooru", cdata->downloads_dir);
+
+    if (mkdir(module_downloads_dir, S_IRWXU | S_IRGRP) == -1 && errno != EEXIST)
+        assert(0);
+
     return &g_libdanbooru;
 }
 
@@ -34,6 +42,7 @@ void
 danbooru_deinit()
 {
     print_debug_warn("cleaning up danbooru...\n");
+    free((char *)module_downloads_dir);
     free(g_libdanbooru.regex.md);
     free(g_libdanbooru.regex.pattern);
 }
