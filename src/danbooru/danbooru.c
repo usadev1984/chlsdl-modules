@@ -202,30 +202,30 @@ danbooru_save_metadata(const char * metadata_file, danbooru_info info,
         json_object * r = json_object_new_object();
         if (info.parent_id)
             json_object_object_add(
-                extra, "parent_id", json_object_new_string(info.parent_id));
+                r, "parent_id", json_object_new_string(info.parent_id));
         else
-            json_object_object_add(extra, "parent_id", json_object_new_null());
+            json_object_object_add(r, "parent_id", json_object_new_null());
 
         if (!info.taglists.children)
-            json_object_object_add(extra, "children", json_object_new_null());
+            json_object_object_add(r, "children", json_object_new_null());
         else {
             json_object * arr
                 = json_object_new_array_ext(info.taglists.nchildren);
             for (int i = 0; i < info.taglists.nchildren; ++i)
                 json_object_array_add(
                     arr, json_object_new_string(info.taglists.children[i]));
-            json_object_object_add(extra, "children", arr);
+            json_object_object_add(r, "children", arr);
         }
 
         if (!info.taglists.siblings)
-            json_object_object_add(extra, "siblings", json_object_new_null());
+            json_object_object_add(r, "siblings", json_object_new_null());
         else {
             json_object * arr
                 = json_object_new_array_ext(info.taglists.nsiblings);
             for (int i = 0; i < info.taglists.nsiblings; ++i)
                 json_object_array_add(
                     arr, json_object_new_string(info.taglists.siblings[i]));
-            json_object_object_add(extra, "siblings", arr);
+            json_object_object_add(r, "siblings", arr);
         }
         r;
     });
