@@ -6,6 +6,7 @@
 #include <chlsdl/common/util/util.h>
 #include <chlsdl/macros.h>
 #include <chlsdl/module.h>
+#include <json-c/json.h>
 #include <stdlib.h>
 #include <string.h>
 #define PCRE2_CODE_UNIT_WIDTH 8
@@ -18,6 +19,66 @@ struct module g_libdanbooru = {
 };
 
 static const char * module_downloads_dir;
+
+static void
+danbooru_load_to_array(json_object * jdata, const char * jdata_key,
+    int * array_len, const char *** array)
+{
+    json_object * tmp = json_object_object_get(jdata, jdata_key);
+    if (!tmp) {
+        *array_len = 0;
+        *array     = NULL;
+        return;
+    }
+    int ntmp = json_object_array_length(tmp);
+
+    const char ** r = malloc(sizeof(*r) * ntmp);
+    assert(r);
+    for (int i = 0; i < ntmp; ++i) {
+        r[i]
+            = strdup(json_object_get_string(json_object_array_get_idx(tmp, i)));
+        assert(r[i]);
+    }
+
+    *array_len = ntmp;
+    *array     = r;
+}
+
+static void
+to_danbooru_info(danbooru_info * info, char * data)
+{
+    json_object * jdata = json_tokener_parse(data);
+    assert(jdata);
+    info->url  = json_object_get_string(json_object_object_get(jdata, "url"));
+    info->name = json_object_get_string(json_object_object_get(jdata, "name"));
+    info->src = json_object_get_string(json_object_object_get(jdata, "module"));
+
+    print_debug_warn("info->url: '%s'\n", info->url);
+    print_debug_warn("info->name: '%s'\n", info->name);
+    print_debug_warn("info->src: '%s'\n", info->src);
+
+    info->parent_id
+        = json_object_get_string(json_object_object_get(jdata, "parent_id"));
+    print_debug_warn("info->parent_id: '%s'\n", info->parent_id);
+
+    danbooru_load_to_array(jdata, "information", &info->taglists.ninformation,
+        &info->taglists.information);
+    for (int i = 0; i < info->taglists.ninformation; ++i)
+        print_debug_warn("info->taglists.information: '%s'\n",
+            info->taglists.information[i]);
+
+    danbooru_load_to_array(
+        jdata, "children", &info->taglists.nchildren, &info->taglists.children);
+    for (int i = 0; i < info->taglists.nchildren; ++i)
+        print_debug_warn(
+            "info->taglists.children: '%s'\n", info->taglists.children[i]);
+
+    danbooru_load_to_array(
+        jdata, "siblings", &info->taglists.nsiblings, &info->taglists.siblings);
+    for (int i = 0; i < info->taglists.nsiblings; ++i)
+        print_debug_warn(
+            "info->taglists.siblings: '%s'\n", info->taglists.siblings[i]);
+}
 
 const struct module *
 danbooru_init(const struct chlsdl_data * cdata)
@@ -69,4 +130,7 @@ danbooru_func(void * vargp)
     assert(orig_data);
 
     char * data = orig_data + strlen(get_line_from_string(orig_data));
+
+    danbooru_info info;
+    to_danbooru_info(&info, data);
 }
