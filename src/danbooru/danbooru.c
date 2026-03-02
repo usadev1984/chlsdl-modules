@@ -151,4 +151,12 @@ danbooru_func(void * vargp)
 
     danbooru_info info;
     to_danbooru_info(&info, data);
+
+    chlsdl_defer char * metadata_file
+        = svconcat("%s/%s.json", module_downloads_dir, info.name);
+
+    if (file_exists(metadata_file)) {
+        print_warn("'%s' has already been downloaded\n", info.name);
+        return;
+    }
 }
