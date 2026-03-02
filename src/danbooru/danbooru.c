@@ -71,7 +71,7 @@ to_danbooru_info(danbooru_info * info, char * data)
     assert(jdata);
     info->url  = json_object_get_string(json_object_object_get(jdata, "url"));
     info->name = json_object_get_string(json_object_object_get(jdata, "name"));
-    info->src = json_object_get_string(json_object_object_get(jdata, "module"));
+    info->src = json_object_get_string(json_object_object_get(jdata, "source"));
 
     print_debug_warn("info->url: '%s'\n", info->url);
     print_debug_warn("info->name: '%s'\n", info->name);
@@ -149,7 +149,7 @@ danbooru_save_metadata(const char * metadata_file, danbooru_info info,
         json_object_new_string(info.taglists.information[0]));
     json_object_object_add(information, "date",
         json_object_new_string(info.taglists.information[1]));
-    json_object_object_add(information, "module",
+    json_object_object_add(information, "source",
         json_object_new_string(info.taglists.information[2]));
     json_object_object_add(information, "rating",
         json_object_new_string(info.taglists.information[3]));
