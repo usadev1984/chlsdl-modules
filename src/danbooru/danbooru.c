@@ -234,7 +234,7 @@ danbooru_save_metadata(const char * metadata_file, danbooru_info info,
 
     print_info("saving metadata to: '%s'\n", metadata_file);
 
-    dump_buffer_to_file(metadata_file, 0,
+    write_buffer_to_file(metadata_file, 0,
         json_object_to_json_string_ext(obj, JSON_C_TO_STRING_PRETTY));
 
     json_object_put(obj);
@@ -363,7 +363,7 @@ danbooru_func(void * vargp)
     assert(out);
     /* TODO: check md5sum */
     print_info("saving to: '%s'\n", out);
-    dump_buffer_to_file(out, buf->at, buf->data);
+    write_buffer_to_file(out, buf->at, buf->data);
 
     danbooru_save_metadata(metadata_file, info, post_info, commentary);
 
