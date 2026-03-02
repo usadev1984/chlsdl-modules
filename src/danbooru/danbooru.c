@@ -14,6 +14,22 @@
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
 
+typedef struct {
+    const char * url;
+    const char * name;
+    const char * src;
+
+    const char * parent_id;
+
+    struct {
+        int           ninformation;
+        const char ** information;
+        int           nchildren;
+        const char ** children;
+        int           nsiblings;
+        const char ** siblings;
+    } taglists;
+} danbooru_info;
 
 struct module g_libdanbooru = {
     danbooru_deinit,
