@@ -35,6 +35,7 @@
             libxmu.dev
             pcre2.dev
             json_c.dev
+            curl.dev
           ];
           hardeningDisable = [ "all" ];
         };
@@ -50,6 +51,7 @@
             libxmu.dev
             pcre2.dev
             json_c.dev
+            curl.dev
           ];
 
           buildPhase = ''
