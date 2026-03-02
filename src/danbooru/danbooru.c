@@ -159,4 +159,45 @@ danbooru_func(void * vargp)
         print_warn("'%s' has already been downloaded\n", info.name);
         return;
     }
+
+    /* download artist commentary json */
+    chlsdl_defer char * commentary_url
+        = svconcat("https://danbooru.donmai.us/posts/%s/artist_commentary.json",
+            info.taglists.information[0]);
+    assert(commentary_url);
+
+    struct curl_buffer * buf = curl_buffer_alloc(1024);
+    if (curl_request_get(commentary_url, buf) != CURLE_OK) {
+        print_error(
+            "failed to download artist commentary: '%s'\n", commentary_url);
+        return;
+    }
+
+    /* parse it */
+    json_object * commentary = json_tokener_parse(buf->data);
+    if (!commentary) {
+        print_error("failed to parse artist commentary\n");
+        return;
+    }
+
+    /* download post info json */
+    chlsdl_defer char * post_info_url
+        = svconcat("https://danbooru.donmai.us/posts/%s.json",
+            info.taglists.information[0]);
+    assert(post_info_url);
+
+    print_info("downloading post info: '%s'\n", post_info_url);
+
+    buf->at = 0; /* re-use buffer */
+    if (curl_request_get(post_info_url, buf) != CURLE_OK) {
+        print_error("failed to download post info: '%s'\n", post_info_url);
+        return;
+    }
+
+    /* parse it */
+    json_object * post_info = json_tokener_parse(buf.data);
+    if (!post_info) {
+        print_error("failed to parse post info\n");
+        return;
+    }
 }
