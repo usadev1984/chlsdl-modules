@@ -6,9 +6,11 @@
 #include <chlsdl/common/util/util.h>
 #include <chlsdl/macros.h>
 #include <chlsdl/module.h>
+#include <errno.h>
 #include <json-c/json.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
 
