@@ -38,6 +38,8 @@ struct module g_libdanbooru = {
 
 static const char * module_downloads_dir;
 
+static pcre2_code * g_whitespace_pattern;
+
 static void
 danbooru_load_to_array(json_object * jdata, const char * jdata_key,
     int * array_len, const char *** array)
@@ -117,6 +119,10 @@ danbooru_init(const struct chlsdl_data * cdata)
     if (mkdir(module_downloads_dir, S_IRWXU | S_IRGRP) == -1 && errno != EEXIST)
         assert(0);
 
+    g_whitespace_pattern = pcre2_compile((PCRE2_SPTR8) "\r\n",
+        PCRE2_ZERO_TERMINATED, 0, &(int) { 0 }, &(PCRE2_SIZE) { 0 }, NULL);
+    assert(g_whitespace_pattern);
+
     return &g_libdanbooru;
 }
 
@@ -124,6 +130,7 @@ void
 danbooru_deinit()
 {
     print_debug_warn("cleaning up danbooru...\n");
+    free(g_whitespace_pattern);
     free((char *)module_downloads_dir);
     free(g_libdanbooru.regex.md);
     free(g_libdanbooru.regex.pattern);
