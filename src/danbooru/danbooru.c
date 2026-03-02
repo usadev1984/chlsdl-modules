@@ -100,6 +100,146 @@ to_danbooru_info(danbooru_info * info, char * data)
             "info->taglists.siblings: '%s'\n", info->taglists.siblings[i]);
 }
 
+static void
+danbooru_load_taglist_to_array(json_object * out, const char * out_key,
+    json_object * post_info, const char * taglist_key)
+{
+    json_object * arr     = json_object_new_array();
+    char *        taglist = (char *)json_object_get_string(
+        json_object_object_get(post_info, taglist_key));
+    const char * ptr;
+    while ((ptr = strsep(&taglist, " ")))
+        json_object_array_add(arr, json_object_new_string(ptr));
+    json_object_object_add(out, out_key, arr);
+}
+
+static void
+danbooru_save_metadata(const char * metadata_file, danbooru_info info,
+    json_object * post_info, json_object * commentary)
+{
+    json_object * obj = json_object_new_object();
+    assert(obj);
+
+    json_object_object_add(obj, "name", json_object_new_string(info.name));
+    json_object_object_add(obj, "src", json_object_new_string(info.src));
+
+    /* artist */
+    danbooru_load_taglist_to_array(
+        obj, "artist", post_info, "tag_string_artist");
+
+    /* copyright */
+    danbooru_load_taglist_to_array(
+        obj, "copyright", post_info, "tag_string_copyright");
+
+    /* character */
+    danbooru_load_taglist_to_array(
+        obj, "character", post_info, "tag_string_character");
+
+    /* general */
+    danbooru_load_taglist_to_array(
+        obj, "general", post_info, "tag_string_general");
+
+    /* meta */
+    danbooru_load_taglist_to_array(obj, "meta", post_info, "tag_string_meta");
+
+    /* information */
+    json_object * information = json_object_new_object();
+
+    json_object_object_add(information, "id",
+        json_object_new_string(info.taglists.information[0]));
+    json_object_object_add(information, "date",
+        json_object_new_string(info.taglists.information[1]));
+    json_object_object_add(information, "module",
+        json_object_new_string(info.taglists.information[2]));
+    json_object_object_add(information, "rating",
+        json_object_new_string(info.taglists.information[3]));
+
+    json_object_object_add(obj, "information", information);
+
+    /* artist commentary */
+    json_object * artist_commentary = lambda({
+        json_object * r = json_object_new_object();
+
+        json_object * title_obj
+            = json_object_object_get(commentary, "original_title");
+        const char * title = json_object_get_string(title_obj);
+
+        json_object * desc_obj
+            = json_object_object_get(commentary, "original_description");
+        const char * old_desc = json_object_get_string(desc_obj);
+
+        if (!title_obj)
+            title_obj = json_object_new_string("");
+        if (!desc_obj) {
+            desc_obj = json_object_new_string("");
+            goto fill_commentary;
+        }
+
+        /* replace '\r\n' with '\n' */
+        PCRE2_SIZE desc_size = strlen(old_desc) + 1;
+        char *     desc      = malloc(desc_size);
+        assert(desc);
+        assert(
+            pcre2_substitute(g_whitespace_pattern, (PCRE2_SPTR8)old_desc,
+                PCRE2_ZERO_TERMINATED, 0,
+                PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED, NULL, NULL,
+                (PCRE2_SPTR8) "\n", PCRE2_ZERO_TERMINATED, desc, &desc_size)
+            >= 0); /* NOTE: no idea what `PCRE2_SUBSTITUTE_EXTENDED` actually
+                      does */
+        desc_obj = json_object_new_string(desc);
+
+    fill_commentary:
+        json_object_object_add(r, "original_title", title_obj);
+        json_object_object_add(r, "original_description", desc_obj);
+
+        r;
+    });
+
+    json_object_object_add(obj, "artist_commentary", artist_commentary);
+
+    /* extra shit */
+    json_object * extra = lambda({
+        json_object * r = json_object_new_object();
+        if (info.parent_id)
+            json_object_object_add(
+                extra, "parent_id", json_object_new_string(info.parent_id));
+        else
+            json_object_object_add(extra, "parent_id", json_object_new_null());
+
+        if (!info.taglists.children)
+            json_object_object_add(extra, "children", json_object_new_null());
+        else {
+            json_object * arr
+                = json_object_new_array_ext(info.taglists.nchildren);
+            for (int i = 0; i < info.taglists.nchildren; ++i)
+                json_object_array_add(
+                    arr, json_object_new_string(info.taglists.children[i]));
+            json_object_object_add(extra, "children", arr);
+        }
+
+        if (!info.taglists.siblings)
+            json_object_object_add(extra, "siblings", json_object_new_null());
+        else {
+            json_object * arr
+                = json_object_new_array_ext(info.taglists.nsiblings);
+            for (int i = 0; i < info.taglists.nsiblings; ++i)
+                json_object_array_add(
+                    arr, json_object_new_string(info.taglists.siblings[i]));
+            json_object_object_add(extra, "siblings", arr);
+        }
+        r;
+    });
+
+    json_object_object_add(obj, "_", extra);
+
+    print_info("saving metadata to: '%s'\n", metadata_file);
+
+    dump_buffer_to_file(metadata_file, 0,
+        json_object_to_json_string_ext(obj, JSON_C_TO_STRING_PRETTY));
+
+    json_object_put(obj);
+}
+
 const struct module *
 danbooru_init(const struct chlsdl_data * cdata)
 {
