@@ -195,7 +195,7 @@ danbooru_func(void * vargp)
     }
 
     /* parse it */
-    json_object * post_info = json_tokener_parse(buf.data);
+    json_object * post_info = json_tokener_parse(buf->data);
     if (!post_info) {
         print_error("failed to parse post info\n");
         return;
