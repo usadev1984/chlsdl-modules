@@ -347,4 +347,23 @@ danbooru_func(void * vargp)
         print_error("failed to parse post info\n");
         return;
     }
+
+    print_info("downloading: '%s'\n", info.url);
+
+    /* download post media */
+    buf->at = 0; /* re-use buffer */
+    if (curl_request_get(info.url, buf) != CURLE_OK) {
+        print_error("failed to download: '%s'\n", info.url);
+        return;
+    }
+
+    char * out = svconcat("%s/%s", module_downloads_dir, info.name);
+    assert(out);
+    /* TODO: check md5sum */
+    print_info("saving to: '%s'\n", out);
+    dump_buffer_to_file(out, buf->at, buf->data);
+
+    danbooru_save_metadata(metadata_file, info, post_info, commentary);
+
+    free(out);
 }
