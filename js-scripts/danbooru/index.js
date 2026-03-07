@@ -47,7 +47,7 @@
         var parent_id = null
         var children = []
         var siblings = []
-        if (!(postlist == null)) {
+        if (!(postlist == null) && postlist.length != 0) {
             var posts = Array.from(postlist, x => x.id.replace('post_', ''));
 
             var paren = (function() {
