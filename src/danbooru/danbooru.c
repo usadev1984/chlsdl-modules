@@ -313,9 +313,8 @@ danbooru_func(void * vargp)
             info.taglists.information[0]);
     assert(commentary_url);
 
-    struct curl_buffer * buf       = curl_buffer_alloc(1024);
-    chlsdl_defer void *  pbuf      = buf; /* ... */
-    chlsdl_defer void *  pbuf_data = buf->data; /* ... */
+    __chlsdl_defer(__curl_buffer_dealloc) struct curl_buffer * buf
+        = curl_buffer_alloc(1024);
     if (curl_request_get(commentary_url, buf) != CURLE_OK) {
         print_error(
             "failed to download artist commentary: '%s'\n", commentary_url);
