@@ -45,8 +45,8 @@
 
         var postlist = document.querySelectorAll('article[id^="post_"]');
         var parent_id = null
-        var children = null
-        var siblings = null
+        var children = []
+        var siblings = []
         if (!(postlist == null)) {
             var posts = Array.from(postlist, x => x.id.replace('post_', ''));
 
