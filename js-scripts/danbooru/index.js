@@ -43,15 +43,15 @@
 
         let post_info = get_post_info();
 
-        var taglist = document.querySelectorAll('article[id^="post_"]');
-        var parent = null
+        var postlist = document.querySelectorAll('article[id^="post_"]');
+        var parent_id = null
         var children = null
         var siblings = null
-        if (!(taglist == null)) {
-            var posts = Array.from(taglist, x => x.id.replace('post_', ''));
+        if (!(postlist == null)) {
+            var posts = Array.from(postlist, x => x.id.replace('post_', ''));
 
             var paren = (function() {
-                var parent_or_child = Array.from(taglist, x =>
+                var parent_or_child = Array.from(postlist, x =>
                     x.className.includes('post-status-has-children'));
 
                 var idx = parent_or_child.indexOf(true)
@@ -65,19 +65,19 @@
                 children = posts
             } else {
                 console.warn('child')
-                parent = paren;
+                parent_id = paren;
                 siblings = posts.filter((x) => x != post_info[0]);
             }
         }
 
-        console.log("parent", parent, "\n", "children", children, "\n", "siblings", siblings)
+        console.log("parent_id", parent_id, "\n", "children", children, "\n", "siblings", siblings)
 
         GM_setClipboard(url + "\n" + JSON.stringify({
             "url": url,
             "name": name,
             "source": source,
             "information": post_info,
-            "parent_id": parent,
+            "parent_id": parent_id,
             "children": children,
             "siblings": siblings,
         }), "text/plain");
