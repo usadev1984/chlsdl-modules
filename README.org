@@ -1,0 +1,29 @@
+#+TITLE: chlsdl-modules
+#+AUTHOR: usadev1984
+#+LANGUAGE: en
+
+modules repo for [[https://github.com/usadev1984/chlsdl][chlsdl]] which hosts modules for all of the supported sources.
+** supported sources
+- danbooru (images-only)
+** dependencies
+the full dependencies (some module may not depend on all of these) are:
+- [[https://github.com/usadev1984/chlsdl/][libchlsdl-common]] (required)
+- pcre2
+- json-c
+- pkg-config (build-time only)
+** building
+navigate to each module's directory and run the following commands where ~${module_name}~ is the name of the module's directory. if you don't want colored output or your terminal doesn't have truecolor support, don't pass ~COLOR=1~ to ~make~.
+- build module:
+#+BEGIN_SRC shell
+make -j$((`nproc`+1)) lib${module_name} COLOR=1
+#+END_SRC
+- install with:
+#+BEGIN_SRC shell
+  sudo make install
+#+END_SRC
+** todo
+- [ ] fix building on nixos
+- [ ] fix build system
+  - [ ] figure out a good project structure
+- [ ] support videos from danbooru
+- [ ] add support for r34
