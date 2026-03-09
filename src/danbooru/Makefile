@@ -6,7 +6,6 @@
 MAKEFLAGS += -rR
 
 include config.mk
-override INCS += -I../../lib
 
 ifeq ($(strip $(COLOR)),1)
 	CFLAGS += -DCOLOR
