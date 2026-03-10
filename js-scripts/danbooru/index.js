@@ -72,7 +72,7 @@
 
         console.log("parent_id", parent_id, "\n", "children", children, "\n", "siblings", siblings)
 
-        GM_setClipboard(url + "\n" + JSON.stringify({
+        let final_data = url + "\n" + JSON.stringify({
             "url": url,
             "name": name,
             "source": source,
@@ -80,7 +80,12 @@
             "parent_id": parent_id,
             "children": children,
             "siblings": siblings,
-        }), "text/plain");
+        });
+
+        GM_setClipboard(final_data, "text/plain");
+    }
+
+    function get_taglist(list_class) {
     }
 
     function get_post_info() {
