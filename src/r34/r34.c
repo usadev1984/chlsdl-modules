@@ -84,6 +84,60 @@ to_r34_info(r34_info * info, const char * data)
     print_debug_warn("info->src: '%s'\n", info->src);
 }
 
+static void
+r34_save_metadata(
+    const char * metadata_file, r34_info info, json_object * post_info)
+{
+    json_object * obj = json_object_new_object();
+    assert(obj);
+
+    json_object_object_add(obj, "name", json_object_new_string(info.name));
+    json_object_object_add(obj, "src", json_object_new_string(info.src));
+
+    /* artist */
+    json_object_object_add(
+        obj, "artist", json_object_object_get(post_info, "artist"));
+
+    /* copyright */
+    json_object_object_add(
+        obj, "copyright", json_object_object_get(post_info, "copyright"));
+
+    /* character */
+    json_object_object_add(
+        obj, "character", json_object_object_get(post_info, "character"));
+
+    /* general */
+    json_object_object_add(
+        obj, "general", json_object_object_get(post_info, "general"));
+
+    /* meta */
+    json_object_object_add(
+        obj, "meta", json_object_object_get(post_info, "meta"));
+
+    /* statistics */
+    json_object * statistics = lambda({
+        json_object * r     = json_object_new_object();
+        json_object * jinfo = json_object_object_get(post_info, "information");
+        assert(jinfo);
+        json_object_object_add(r, "id", json_object_array_get_idx(jinfo, 0));
+        json_object_object_add(r, "date", json_object_array_get_idx(jinfo, 1));
+        json_object_object_add(
+            r, "source", json_object_array_get_idx(jinfo, 2));
+        json_object_object_add(
+            r, "rating", json_object_array_get_idx(jinfo, 3));
+        r;
+    });
+
+    json_object_object_add(obj, "statistics", statistics);
+
+    print_info("saving metadata to: '%s'\n", metadata_file);
+
+    write_buffer_to_file(metadata_file, 0,
+        json_object_to_json_string_ext(obj, JSON_C_TO_STRING_PRETTY));
+
+    json_object_put(obj);
+}
+
 void
 r34_func(void * vargp)
 {
@@ -110,4 +164,16 @@ r34_func(void * vargp)
     /* download post media */
     if (curl_request_get(info.url, buf) != CURLE_OK)
         return (void)print_error("failed to download: '%s'\n", info.url);
+
+    char * out = svconcat("%s/%s", module_downloads_dir, info.name);
+    assert(out);
+
+    print_info("saving to: '%s'\n", out);
+    write_buffer_to_file(out, buf->at, buf->data);
+
+    json_object * post_info = json_tokener_parse(data);
+    assert(post_info);
+    r34_save_metadata(metadata_file, info, post_info);
+
+    free(out);
 }
