@@ -95,4 +95,19 @@ r34_func(void * vargp)
     r34_info info;
     to_r34_info(&info, data);
 
+    chlsdl_defer char * metadata_file
+        = svconcat("%s/%s.json", module_downloads_dir, info.name);
+
+    if (file_exists(metadata_file))
+        return (void)print_warn(
+            "'%s' has already been downloaded\n", info.name);
+
+    __chlsdl_defer(__curl_buffer_dealloc) struct curl_buffer * buf
+        = curl_buffer_alloc(1024);
+
+    print_info("downloading: '%s'\n", info.url);
+
+    /* download post media */
+    if (curl_request_get(info.url, buf) != CURLE_OK)
+        return (void)print_error("failed to download: '%s'\n", info.url);
 }
