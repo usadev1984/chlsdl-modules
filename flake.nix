@@ -3,7 +3,6 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     # nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
-    chlsdl.url = "github:usadev1984/chlsdl";
   };
   outputs =
     {
@@ -11,7 +10,6 @@
       nixpkgs,
       # nixpkgs-unstable,
       utils,
-      chlsdl,
       ...
     }:
     utils.lib.eachDefaultSystem (
@@ -30,7 +28,6 @@
             pkgs.gcc
           ];
           buildInputs = with pkgs; [
-            chlsdl.packages.${system}.default
             xorg.libX11.dev
             libxmu.dev
             pcre2.dev
@@ -46,7 +43,6 @@
           src = ./.;
 
           buildInputs = with pkgs; [
-            chlsdl.packages.${system}.default
             xorg.libX11.dev
             libxmu.dev
             pcre2.dev

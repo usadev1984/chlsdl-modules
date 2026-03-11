@@ -7,7 +7,6 @@ modules repo for [[https://github.com/usadev1984/chlsdl][chlsdl]] which hosts mo
 - danbooru (images-only)
 ** dependencies
 the full dependencies (some module may not depend on all of these) are:
-- [[https://github.com/usadev1984/chlsdl/][libchlsdl-common]] (required)
 - pcre2
 - json-c
 - pkg-config (build-time only)
