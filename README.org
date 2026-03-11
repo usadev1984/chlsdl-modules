@@ -5,6 +5,7 @@
 modules repo for [[https://github.com/usadev1984/chlsdl][chlsdl]] which hosts modules for all of the supported sources.
 ** supported sources
 - danbooru (images-only)
+- r34 (images, gifs, videos)
 ** dependencies
 the full dependencies (some module may not depend on all of these) are:
 - pcre2
@@ -32,4 +33,4 @@ sudo make install MODULES="lib${mod_1} lib${mod_2}"
 - [ ] fix build system
   - [ ] figure out a good project structure
 - [ ] support videos from danbooru
-- [ ] add support for r34
+- [X] add support for r34
