@@ -11,15 +11,22 @@ the full dependencies (some module may not depend on all of these) are:
 - json-c
 - pkg-config (build-time only)
 ** building
-navigate to each module's directory and run the following commands where ~${module_name}~ is the name of the module's directory. if you don't want colored output or your terminal doesn't have truecolor support, don't pass ~COLOR=1~ to ~make~.
-- build module:
+if you don't want colored output or your terminal doesn't have truecolor support, don't pass ~COLOR=1~ to ~make~.
+- build modules:
 #+BEGIN_SRC shell
-make -j$((`nproc`+1)) lib${module_name} COLOR=1
+make -j$((`nproc`+1)) modules COLOR=1
 #+END_SRC
 - install with:
 #+BEGIN_SRC shell
   sudo make install
 #+END_SRC
+*NOTES*:
+- to build only two modules where ~$mod_1~ and ~$mod_2~ are the names of the module directories, pass ~MODULES="lib${mod_1} lib${mod_2}"~ to both commands. example:
+#+BEGIN_SRC shell
+make -j$((`nproc`+1)) modules MODULES="lib${mod_1} lib${mod_2}" COLOR=1
+sudo make install MODULES="lib${mod_1} lib${mod_2}"
+#+END_SRC
+- if you alter the value of ~$PREFIX~, you *MUST* use the same value when building the main program
 ** todo
 - [ ] fix building on nixos
 - [ ] fix build system
