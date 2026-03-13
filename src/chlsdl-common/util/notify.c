@@ -91,4 +91,19 @@ chlsdl_notify_notification_show(const chlsdl_notification noti)
     return notify_notification_show(noti, NULL);
 }
 
+bool
+__chlsdl_notify_notification_show_new(
+    const __chlsdl_notify_notification_show_new_args * args)
+{
+    chlsdl_notification noti = __chlsdl_notify_notification_create(args);
+
+    if (!noti)
+        return false;
+
+    bool r = notify_notification_show(noti, NULL);
+
+    chlsdl_notify_notification_destroy(noti);
+    return r;
+}
+
 #endif

@@ -33,6 +33,11 @@ struct __chlsdl_notify_notification_set_args {
     const char *        icon;
 };
 
+/* there should be no problem for the args of both functions to be the same for
+ * now */
+typedef struct __chlsdl_notify_notification_create_args
+    __chlsdl_notify_notification_show_new_args;
+
 #    define chlsdl_notify_notification_create(...)                             \
         __chlsdl_notify_notification_create(                                   \
             &(const struct __chlsdl_notify_notification_create_args) {         \
@@ -42,6 +47,10 @@ struct __chlsdl_notify_notification_set_args {
         __chlsdl_notify_notification_set(                                      \
             &(const struct __chlsdl_notify_notification_set_args) {            \
                 __VA_ARGS__ })
+
+#    define chlsdl_notify_notification_show_new(...)                           \
+        __chlsdl_notify_notification_show_new(&(                               \
+            const __chlsdl_notify_notification_show_new_args) { __VA_ARGS__ })
 
 extern bool
 chlsdl_notify_init(const char * app_name);
@@ -62,6 +71,10 @@ __chlsdl_notify_notification_create(
 extern bool
 __chlsdl_notify_notification_set(
     const struct __chlsdl_notify_notification_set_args * args);
+
+extern bool
+__chlsdl_notify_notification_show_new(
+    const __chlsdl_notify_notification_show_new_args * args);
 
 #endif
 
