@@ -10,6 +10,7 @@ modules repo for [[https://github.com/usadev1984/chlsdl][chlsdl]] which hosts mo
 the full dependencies (some module may not depend on all of these) are:
 - pcre2
 - json-c
+- libnotify (optional. push notifications)
 - pkg-config (build-time only)
 ** building
 *** options

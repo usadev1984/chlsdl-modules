@@ -15,6 +15,11 @@ ifeq ($(strip $(PREFIX)),)
 	PREFIX = /usr/local
 endif
 
+ifeq ($(strip $(LIBNOTIFY)),1)
+	LDFLAGS += $(shell pkg-config --libs libnotify)
+	CFLAGS += -DUSE_LIBNOTIFY $(shell pkg-config --cflags libnotify)
+endif
+
 LIB_OBJ := $(patsubst %.c, %.o, $(wildcard */*.c)) \
 				$(patsubst %.c, %.o, $(wildcard *.c))
 
