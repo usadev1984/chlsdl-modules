@@ -26,9 +26,21 @@ struct __chlsdl_notify_notification_create_args {
     int                         timeout;
 };
 
+struct __chlsdl_notify_notification_set_args {
+    chlsdl_notification noti;
+    const char *        summary;
+    const char *        body;
+    const char *        icon;
+};
+
 #    define chlsdl_notify_notification_create(...)                             \
         __chlsdl_notify_notification_create(                                   \
             &(const struct __chlsdl_notify_notification_create_args) {         \
+                __VA_ARGS__ })
+
+#    define chlsdl_notify_notification_set(...)                                \
+        __chlsdl_notify_notification_set(                                      \
+            &(const struct __chlsdl_notify_notification_set_args) {            \
                 __VA_ARGS__ })
 
 extern bool
@@ -37,9 +49,16 @@ chlsdl_notify_init(const char * app_name);
 extern void
 chlsdl_notify_uninit();
 
+extern void
+chlsdl_notify_notification_destroy(chlsdl_notification noti);
+
 extern chlsdl_notification
 __chlsdl_notify_notification_create(
     const struct __chlsdl_notify_notification_create_args * args);
+
+extern bool
+__chlsdl_notify_notification_set(
+    const struct __chlsdl_notify_notification_set_args * args);
 
 #endif
 

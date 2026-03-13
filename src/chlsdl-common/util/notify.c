@@ -66,4 +66,23 @@ __chlsdl_notify_notification_create(
     return r;
 }
 
+void
+chlsdl_notify_notification_destroy(chlsdl_notification noti)
+{
+    g_object_unref(G_OBJECT(noti));
+}
+
+bool
+__chlsdl_notify_notification_set(
+    const struct __chlsdl_notify_notification_set_args * args)
+{
+    /**
+     * TODO: unfuck this. this needs to be able to change the rest of the
+     * attributes supported by `__chlsdl_notify_notification_create()`. also, is
+     * it possible to not overwrite everything on every call?
+     */
+    return notify_notification_update(
+        args->noti, !args->summary ? "" : args->summary, args->body, NULL);
+}
+
 #endif
