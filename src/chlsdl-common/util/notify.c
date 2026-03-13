@@ -34,4 +34,36 @@ chlsdl_notify_uninit()
     return notify_uninit();
 }
 
+chlsdl_notification
+__chlsdl_notify_notification_create(
+    const struct __chlsdl_notify_notification_create_args * args)
+{
+    static gint notification_id;
+
+    chlsdl_notification r = g_object_new(NOTIFY_TYPE_NOTIFICATION, "summary",
+        !args->summary ? "" : args->summary, "body", args->body, "app-icon",
+        NULL, "icon-name", NULL, "id", notification_id++, NULL);
+
+    if (!r)
+        return NULL;
+
+    /* switch (args->category) { */
+    /* case chlsdl_notify_category_im: */
+    /*     notify_notification_set_category(r, "im"); */
+    /* default: */
+    /* } */
+
+    if (args->category != chlsdl_notify_category_none) {
+        print_error("categories are not supported\n");
+        assert(0);
+    }
+
+    if (args->urgency != chlsdl_notify_urgency_normal)
+        notify_notification_set_urgency(r, args->urgency);
+
+    if (args->timeout > 0)
+        notify_notification_set_timeout(r, args->timeout);
+    return r;
+}
+
 #endif
