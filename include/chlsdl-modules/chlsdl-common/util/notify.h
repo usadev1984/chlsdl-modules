@@ -52,6 +52,9 @@ chlsdl_notify_uninit();
 extern void
 chlsdl_notify_notification_destroy(chlsdl_notification noti);
 
+extern bool
+chlsdl_notify_notification_show(const chlsdl_notification noti);
+
 extern chlsdl_notification
 __chlsdl_notify_notification_create(
     const struct __chlsdl_notify_notification_create_args * args);

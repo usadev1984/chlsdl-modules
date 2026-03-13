@@ -85,4 +85,10 @@ __chlsdl_notify_notification_set(
         args->noti, !args->summary ? "" : args->summary, args->body, NULL);
 }
 
+bool
+chlsdl_notify_notification_show(const chlsdl_notification noti)
+{
+    return notify_notification_show(noti, NULL);
+}
+
 #endif
