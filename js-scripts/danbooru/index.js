@@ -4,12 +4,27 @@
 // @match       https://danbooru.donmai.us/posts/*
 // @grant       clipboardWrite
 // @grant       GM_setClipboard
+// @grant       GM_xmlhttpRequest
 // @version     1.0
 // @author      -
 // @description 11/15/2025, 10:43:14 AM
 // ==/UserScript==
 (function() {
     'use strict';
+
+    let headers = {
+        "User-Agent": "",
+        "Accept": "",
+        "Accept-Language": "",
+        "Accept-Encoding": "",
+        "Content-Type": "",
+        "Content-Length": "",
+        "Sec-GPC": "",
+        "Connection": "",
+        "Sec-Fetch-Dest": "",
+        "Sec-Fetch-Mode": "",
+        "Sec-Fetch-Site": "",
+    };
 
     document.onkeyup = function(e) {
         if (e.which != 192) { // `
@@ -82,7 +97,30 @@
             "siblings": siblings,
         });
 
-        GM_setClipboard(final_data, "text/plain");
+        // GM_setClipboard(final_data, "text/plain");
+
+        GM_xmlhttpRequest({
+            url: "http://localhost:53162",
+            method: "POST",
+            anonymouse: true,
+            /**
+             * setting a timeout appears to be useless since `onerror` gets called
+             * instead when we can't connect to the main program because it
+             * didn't have a socket open.
+             * unrelated: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState
+             */
+            // timeout: 2000,
+            // ontimeout: (function (x) {
+            //     console.log(x)
+            //     console.error("post request timed out");
+            // }),
+            onerror: (function (x) {
+                console.error("failed to post data. is the main program running?");
+                console.log(x);
+            }),
+            headers: headers,
+            data: final_data,
+        });
     }
 
     function get_taglist(list_class) {
