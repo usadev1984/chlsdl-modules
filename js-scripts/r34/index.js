@@ -4,12 +4,27 @@
 // @match       https://rule34.xxx/index.php*
 // @grant       clipboardWrite
 // @grant       GM_setClipboard
+// @grant       GM_xmlhttpRequest
 // @version     1.0
 // @author      usadev1984
 // @description 3/9/2026, 10:43:14 PM
 // ==/UserScript==
 (function() {
     'use strict';
+
+    let headers = {
+        "User-Agent": "",
+        "Accept": "",
+        "Accept-Language": "",
+        "Accept-Encoding": "",
+        "Content-Type": "",
+        "Content-Length": "",
+        "Sec-GPC": "",
+        "Connection": "",
+        "Sec-Fetch-Dest": "",
+        "Sec-Fetch-Mode": "",
+        "Sec-Fetch-Site": "",
+    };
 
     document.onkeyup = function(e) {
         if (e.which != 192) // `
@@ -38,7 +53,7 @@
         let source = window.location.href.match(/.+(?<=[\?&])id=[0-9]+/)[0];
 
         var postlist = document.querySelectorAll('article[id^="post_"]');
-        GM_setClipboard(url + "\n" + JSON.stringify({
+        let final_data = url + "\n" + JSON.stringify({
             "url": url,
             "name": name,
             "copyright": get_post_tags('copyright'),
@@ -48,7 +63,32 @@
             "meta": get_post_tags('metadata'),
             "source": source,
             "information": get_post_info(),
-        }), "text/plain");
+        });
+
+        // GM_setClipboard(final_data, "text/plain");
+
+        GM_xmlhttpRequest({
+            url: "http://localhost:53162",
+            method: "POST",
+            anonymouse: true,
+            /**
+             * setting a timeout appears to be useless since `onerror` gets called
+             * instead when we can't connect to the main program because it
+             * didn't have a socket open.
+             * unrelated: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState
+             */
+            // timeout: 2000,
+            // ontimeout: (function (x) {
+            //     console.log(x)
+            //     console.error("post request timed out");
+            // }),
+            onerror: (function (x) {
+                console.error("failed to post data. is the main program running?");
+                console.log(x);
+            }),
+            headers: headers,
+            data: final_data,
+        });
     }
 
     function get_post_tags(which_tags) {
