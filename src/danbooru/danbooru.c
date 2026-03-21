@@ -26,6 +26,7 @@
             assert(body);                                                      \
             print("%s\n", body);                                               \
             chlsdl_notify_notification_show_new("chlsdl-danbooru", body,       \
+                .timeout = default_notification_timeout);                      \
             free(body);                                                        \
         })
 
@@ -35,6 +36,7 @@
             assert(body);                                                      \
             print("%s\n", body);                                               \
             chlsdl_notify_notification_show_new("chlsdl-danbooru", body,       \
+                .timeout = default_notification_timeout,                       \
                 .urgency = chlsdl_notify_urgency_critical);                    \
             free(body);                                                        \
         })
@@ -71,6 +73,8 @@ struct module g_libdanbooru = {
 static const char * module_downloads_dir;
 
 static pcre2_code * g_whitespace_pattern;
+
+static int default_notification_timeout;
 
 static void
 danbooru_load_to_array(json_object * jdata, const char * jdata_key,
@@ -294,6 +298,8 @@ danbooru_init(const struct chlsdl_data * cdata)
     g_whitespace_pattern = pcre2_compile((PCRE2_SPTR8) "\r\n",
         PCRE2_ZERO_TERMINATED, 0, &(int) { 0 }, &(PCRE2_SIZE) { 0 }, NULL);
     assert(g_whitespace_pattern);
+
+    default_notification_timeout = cdata->default_notification_timeout;
 
     return &g_libdanbooru;
 }
