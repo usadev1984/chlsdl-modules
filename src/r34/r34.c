@@ -21,7 +21,8 @@
             char * body = svconcat(fmt __VA_OPT__(, ) __VA_ARGS__);            \
             assert(body);                                                      \
             print("%s\n", body);                                               \
-            chlsdl_notify_notification_show_new("chlsdl-r34", body);           \
+            chlsdl_notify_notification_show_new(                               \
+                "chlsdl-r34", body, .timeout = default_notification_timeout);  \
             free(body);                                                        \
         })
 
@@ -31,6 +32,7 @@
             assert(body);                                                      \
             print("%s\n", body);                                               \
             chlsdl_notify_notification_show_new("chlsdl-r34", body,            \
+                .timeout = default_notification_timeout,                       \
                 .urgency = chlsdl_notify_urgency_critical);                    \
             free(body);                                                        \
         })
@@ -55,6 +57,8 @@ struct module g_libr34 = {
 
 static const char * module_downloads_dir;
 
+static int default_notification_timeout;
+
 const struct module *
 r34_init(const struct chlsdl_data * cdata)
 {
@@ -73,6 +77,8 @@ r34_init(const struct chlsdl_data * cdata)
 
     if (mkdir(module_downloads_dir, S_IRWXU | S_IRGRP) == -1 && errno != EEXIST)
         assert(0);
+
+    default_notification_timeout = cdata->default_notification_timeout;
 
     return &g_libr34;
 }
