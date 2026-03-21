@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <chlsdl-modules/chlsdl-common/common.h>
 #include <chlsdl-modules/chlsdl-common/print.h>
+#include <chlsdl-modules/chlsdl-common/util/notify.h>
 #include <chlsdl-modules/chlsdl-common/util/util.h>
 #include <chlsdl/macros.h>
 #include <chlsdl/module.h>
@@ -13,6 +14,37 @@
 #include <sys/stat.h>
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
+
+#ifdef USE_LIBNOTIFY
+/*
+ * TODO: we shouldn't have to re-define these two macros for every module. they
+ * need to be improved too
+ */
+#    define MOD_PRINT_AND_NOTIFY(print, fmt, ...)                              \
+        ({                                                                     \
+            char * body = svconcat(fmt __VA_OPT__(, ) __VA_ARGS__);            \
+            assert(body);                                                      \
+            print("%s\n", body);                                               \
+            chlsdl_notify_notification_show_new("chlsdl-danbooru", body,       \
+            free(body);                                                        \
+        })
+
+#    define MOD_ERROR_AND_NOTIFY(print, fmt, ...)                              \
+        ({                                                                     \
+            char * body = svconcat(fmt __VA_OPT__(, ) __VA_ARGS__);            \
+            assert(body);                                                      \
+            print("%s\n", body);                                               \
+            chlsdl_notify_notification_show_new("chlsdl-danbooru", body,       \
+                .urgency = chlsdl_notify_urgency_critical);                    \
+            free(body);                                                        \
+        })
+#else
+#    define MOD_PRINT_AND_NOTIFY(print, fmt, ...)                              \
+        print(fmt "\n" __VA_OPT__(, ) __VA_ARGS__)
+
+#    define MOD_ERROR_AND_NOTIFY(print, fmt, ...)                              \
+        print(fmt "\n" __VA_OPT__(, ) __VA_ARGS__)
+#endif
 
 typedef struct {
     const char * url;
@@ -303,7 +335,8 @@ danbooru_func(void * vargp)
         = svconcat("%s/%s.json", module_downloads_dir, info.name);
 
     if (file_exists(metadata_file)) {
-        print_warn("'%s' has already been downloaded\n", info.name);
+        MOD_PRINT_AND_NOTIFY(
+            print_warn, "'%s' has already been downloaded", info.name);
         return;
     }
 
@@ -338,7 +371,8 @@ danbooru_func(void * vargp)
 
     buf->at = 0; /* re-use buffer */
     if (curl_request_get(post_info_url, buf) != CURLE_OK) {
-        print_error("failed to download post info: '%s'\n", post_info_url);
+        MOD_ERROR_AND_NOTIFY(
+            print_error, "failed to download post info: '%s'", post_info_url);
         return;
     }
 
@@ -354,7 +388,7 @@ danbooru_func(void * vargp)
     /* download post media */
     buf->at = 0; /* re-use buffer */
     if (curl_request_get(info.url, buf) != CURLE_OK) {
-        print_error("failed to download: '%s'\n", info.url);
+        MOD_ERROR_AND_NOTIFY(print_error, "failed to download: '%s'", info.url);
         return;
     }
 
