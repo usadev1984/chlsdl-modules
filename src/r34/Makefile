@@ -15,6 +15,10 @@ ifeq ($(strip $(PREFIX)),)
 	PREFIX = /usr/local
 endif
 
+ifeq ($(strip $(LIBNOTIFY)),1)
+	CFLAGS += -DUSE_LIBNOTIFY
+endif
+
 LIB_OBJ := $(patsubst %.c, %.o, $(wildcard *.c))
 
 # outputs

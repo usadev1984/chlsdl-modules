@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <chlsdl-modules/chlsdl-common/common.h>
 #include <chlsdl-modules/chlsdl-common/print.h>
+#include <chlsdl-modules/chlsdl-common/util/notify.h>
 #include <chlsdl-modules/chlsdl-common/util/util.h>
 #include <chlsdl/macros.h>
 #include <chlsdl/module.h>
@@ -13,6 +14,33 @@
 #include <sys/stat.h>
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
+
+#ifdef USE_LIBNOTIFY
+#    define MOD_PRINT_AND_NOTIFY(print, fmt, ...)                              \
+        ({                                                                     \
+            char * body = svconcat(fmt __VA_OPT__(, ) __VA_ARGS__);            \
+            assert(body);                                                      \
+            print("%s\n", body);                                               \
+            chlsdl_notify_notification_show_new("chlsdl-r34", body);           \
+            free(body);                                                        \
+        })
+
+#    define MOD_ERROR_AND_NOTIFY(print, fmt, ...)                              \
+        ({                                                                     \
+            char * body = svconcat(fmt __VA_OPT__(, ) __VA_ARGS__);            \
+            assert(body);                                                      \
+            print("%s\n", body);                                               \
+            chlsdl_notify_notification_show_new("chlsdl-r34", body,            \
+                .urgency = chlsdl_notify_urgency_critical);                    \
+            free(body);                                                        \
+        })
+#else
+#    define MOD_PRINT_AND_NOTIFY(print, fmt, ...)                              \
+        print(fmt "\n" __VA_OPT__(, ) __VA_ARGS__)
+
+#    define MOD_ERROR_AND_NOTIFY(print, fmt, ...)                              \
+        print(fmt "\n" __VA_OPT__(, ) __VA_ARGS__)
+#endif
 
 typedef struct {
     const char * url;
@@ -153,22 +181,23 @@ r34_func(void * vargp)
         = svconcat("%s/%s.json", module_downloads_dir, info.name);
 
     if (file_exists(metadata_file))
-        return (void)print_warn(
-            "'%s' has already been downloaded\n", info.name);
+        return (void)MOD_PRINT_AND_NOTIFY(
+            print_warn, "'%s' has already been downloaded", info.name);
 
     __chlsdl_defer(__curl_buffer_dealloc) struct curl_buffer * buf
         = curl_buffer_alloc(1024);
 
-    print_info("downloading: '%s'\n", info.url);
+    MOD_PRINT_AND_NOTIFY(print_info, "downloading: '%s'", info.url);
 
     /* download post media */
     if (curl_request_get(info.url, buf) != CURLE_OK)
-        return (void)print_error("failed to download: '%s'\n", info.url);
+        return (void)MOD_ERROR_AND_NOTIFY(
+            print_error, "failed to download: '%s'", info.url);
 
     char * out = svconcat("%s/%s", module_downloads_dir, info.name);
     assert(out);
 
-    print_info("saving to: '%s'\n", out);
+    MOD_PRINT_AND_NOTIFY(print_info, "saving to: '%s'", out);
     write_buffer_to_file(out, buf->at, buf->data);
 
     json_object * post_info = json_tokener_parse(data);
