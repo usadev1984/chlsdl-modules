@@ -4,7 +4,7 @@
 
 modules repo for [[https://github.com/usadev1984/chlsdl][chlsdl]] which hosts modules for all of the supported sources.
 ** supported sources
-- danbooru (images-only)
+- danbooru (images, gifs, videos)
 - r34 (images, gifs, videos)
 ** dependencies
 the full dependencies (some module may not depend on all of these) are:
