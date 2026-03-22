@@ -35,18 +35,34 @@
     }
 
     function scrape() {
-        let url = document.querySelector('#content > #image-resize-notice > a[href]')
+        let url = document.querySelector('#image > video')
         if (url == null) {
-            url = document.querySelector('#image[src]')
+            url = document.querySelector('#content > #image-resize-notice > a[href]')
             if (url == null) {
-                alert('url not found"' +url +'"')
+                url = document.querySelector('#image[src]')
+                if (url == null) {
+                    alert('url not found"' +url +'"')
+                    return
+                }
+                console.log(url)
+                url = url.src
+            } else {
+                console.log(url)
+                url = url.href
+            }
+        } else {
+            /*
+             * looking for this element to get the video url has the added benefit
+             * of allowing us to get a name for the file that's consistent with the
+             * names of images
+             */
+            url = document.querySelector('#post-option-download > a')
+            if (url == null) {
+                alert("url not found")
                 return
             }
+            url = url.href;
             console.log(url)
-            url = url.src
-        } else {
-            console.log(url)
-            url = url.href
         }
 
         let name = url.match(/(?:.+)\/(.*)/)
