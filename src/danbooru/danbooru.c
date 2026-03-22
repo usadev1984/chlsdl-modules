@@ -145,7 +145,8 @@ danbooru_load_taglist_to_array(json_object * out, const char * out_key,
         json_object_object_get(post_info, taglist_key));
     const char * ptr;
     while ((ptr = strsep(&taglist, " ")))
-        json_object_array_add(arr, json_object_new_string(ptr));
+        if (strcmp(ptr, "") != 0) /* don't add empty entries */
+            json_object_array_add(arr, json_object_new_string(ptr));
     json_object_object_add(out, out_key, arr);
 }
 
