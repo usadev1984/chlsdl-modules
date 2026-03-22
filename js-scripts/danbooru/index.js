@@ -65,8 +65,12 @@
             console.log(url)
         }
 
-        let name = url.match(/(?:.+)\/(.*)/)
-        name = name[name.lastIndex]
+        // let name = url.match(/(?:.+)\/(.*)/)
+        /*
+         * disgusting. TODO: use `URL()` to parse url
+         */
+        let name = url.match(/(?:.+\/)(.+)(?:(\..+?)(?:\?.+)|(\..+))/)
+        name = name.splice(1, name.length - 1).join('')
 
         let source = window.location.href
         console.log(url + '\n' + source);
