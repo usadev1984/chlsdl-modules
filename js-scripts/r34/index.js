@@ -2,6 +2,7 @@
 // @name        chlsdl-r34
 // @namespace   Violentmonkey Scripts
 // @match       https://rule34.xxx/index.php*
+// @icon        data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAy0lEQVQ4T6WT6xXDIAiFJSvpTHUmO5OuFAum14OG2JzGP0YeH1ckVGulEMPu/lg55Y38y1fJ5UNHEFH7Zt8JK3Ha3wDaKBmsaggCBUVOgPIuQyULgCKzrykAAJJnmfpsAlY9WMEkrzdRX0NXke+rJb34CZiTNbwrgMyrHgAiKk0AHAjEM1mzYM7B/IwAWYM0v5jZA1QuZZwP770TgIDhO+aAA1NOLlJ0qR674ym+Y+sAx8V0crvGDdtzBfI7U6Bdqonsvn8VrGycu30ARcXJLW7rOcUAAAAASUVORK5CYII=
 // @grant       clipboardWrite
 // @grant       GM_setClipboard
 // @grant       GM_xmlhttpRequest
