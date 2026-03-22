@@ -2,12 +2,13 @@
 // @name        chlsdl-danbooru
 // @namespace   Violentmonkey Scripts
 // @match       https://danbooru.donmai.us/posts/*
+// @icon        data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgaGVpZ2h0PSIxNiIgd2lkdGg9IjE2IiB2ZXJzaW9uPSIxLjEiPgoJPGRlZnM+CgkJPGxpbmVhckdyYWRpZW50IGlkPSJiZyIgZ3JhZGllbnRUcmFuc2Zvcm09InJvdGF0ZSg4NSkiPgoJCQk8c3RvcCBvZmZzZXQ9IjQ5JSIgc3RvcC1jb2xvcj0iI2JhOTU3MCIgLz4KCQkJPHN0b3Agb2Zmc2V0PSI2NyUiIHN0b3AtY29sb3I9IiNhNDgxNWYiIC8+CgkJPC9saW5lYXJHcmFkaWVudD4KCTwvZGVmcz4KCTxnPgoJCTxwYXRoIGQ9Ik0gMS41LDE0LjUgViA0LjI1IEwgNC4yNSwxLjUgSCAxNC41IHYgMTAuMjUgbCAtMi43NSwyLjc1IHoiIGZpbGw9InVybCgjYmcpIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjEiIC8+CgkJPHBhdGggZD0ibSAxLjUsNC41IGggMTAgdiAxMCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiAvPgoJCTxwYXRoIGQ9Im0gMTQuNSwxLjUgLTMsMyIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxIiAvPgoJPC9nPgo8L3N2Zz4K
 // @grant       clipboardWrite
 // @grant       GM_setClipboard
 // @grant       GM_xmlhttpRequest
 // @require     https://raw.githubusercontent.com/usadev1984/chlsdl-modules/refs/heads/latest/js-scripts/chlsdl-common/index.js
 // @version     1.0
-// @author      -
+// @author      usadev1984
 // @description 11/15/2025, 10:43:14 AM
 // ==/UserScript==
 (function() {
