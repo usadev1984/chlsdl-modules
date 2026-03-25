@@ -33,6 +33,14 @@
         } else
             url = url.src;
 
+        /* name */
+        const name = (() => {
+            const pathname = new URL(url).pathname;
+            return pathname.slice(pathname.lastIndexOf('/') + 1);
+        })();
+
+        console.log(name);
+
         /* source */
         var source = new URL(window.location.href);
         console.log(source.toString());
@@ -48,6 +56,7 @@
         chlsdl_send_to_chlsdl(url, {
             "url": url,
             "src": source,
+            "name": name,
             "copyright": get_taglist('copyright'),
             "character": get_taglist('character'),
             "artist": get_taglist('artist'),
