@@ -48,7 +48,19 @@
         chlsdl_send_to_chlsdl(url, {
             "url": url,
             "src": source,
+            "copyright": get_taglist('copyright'),
+            "character": get_taglist('character'),
+            "artist": get_taglist('artist'),
+            "general": get_taglist('general'),
+            "metadata": get_taglist('metadata'),
         });
     }
 
+    function get_taglist(list_class) {
+        const elems = document.querySelectorAll(
+            '#tag-list > .tag-type-' + list_class + ' > a[href*="tags="]');
+        if (elems.length == 0)
+            console.warn("couldn't find tags of type:", list_class);
+        return Array.from(elems).map(x => x.innerText);
+    }
 })();
