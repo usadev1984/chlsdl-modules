@@ -62,6 +62,7 @@
             "artist": get_taglist('artist'),
             "general": get_taglist('general'),
             "metadata": get_taglist('metadata'),
+            "statistics": get_post_info(),
         });
     }
 
@@ -71,5 +72,36 @@
         if (elems.length == 0)
             console.warn("couldn't find tags of type:", list_class);
         return Array.from(elems).map(x => x.innerText);
+    }
+
+    function get_post_info() {
+        const xpath = '//*[@id="tag-list"]/li'
+        const stats = document.evaluate(
+            `concat(
+                ${xpath}[starts-with(text(), "Id: ")], '\n',
+                substring(normalize-space(${xpath}[starts-with(
+                            normalize-space(text()), "Posted: ")]), 1, 27), '\n',
+                ${xpath}[starts-with(text(), "Source: ")], '\n',
+                ${xpath}[starts-with(text(), "Rating: ")]
+            )`,
+            document, null, XPathResult.STRING_TYPE, null);
+        console.log(stats.stringValue);
+
+        var r = {};
+        for (const i of stats.stringValue.split('\n')) {
+            if (i == '')
+              continue;
+            var [key, value] = i.split(': ');
+            /* ... */
+            key = key.toLowerCase();
+            if (key == "source")
+                value = value.split(' ')
+            else if (key == "posted")
+                key = "date";
+            r[key] = value;
+        }
+
+        console.log(r)
+        return r;
     }
 })();
