@@ -153,12 +153,17 @@ r34_save_metadata(
         json_object * r     = json_object_new_object();
         json_object * jinfo = json_object_object_get(post_info, "information");
         assert(jinfo);
-        json_object_object_add(r, "id", json_object_array_get_idx(jinfo, 0));
-        json_object_object_add(r, "date", json_object_array_get_idx(jinfo, 1));
+
+        json_object_object_add(r, "id", json_object_object_get(jinfo, "id"));
         json_object_object_add(
-            r, "source", json_object_array_get_idx(jinfo, 2));
+            r, "date", json_object_object_get(jinfo, "date"));
+
+        json_object * source = json_object_object_get(jinfo, "source");
         json_object_object_add(
-            r, "rating", json_object_array_get_idx(jinfo, 3));
+            r, "source", source ? source : json_object_new_array());
+
+        json_object_object_add(
+            r, "rating", json_object_object_get(jinfo, "rating"));
         r;
     });
 
