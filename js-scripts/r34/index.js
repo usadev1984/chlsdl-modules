@@ -64,19 +64,34 @@
     }
 
     function get_post_info() {
-        let infolist = document.querySelectorAll("#stats > ul > li")
-        if (infolist.length == 0) {
-            console.warn('post information not found: "' + infolist +'"');
-            return [];
+        var xpath = '//*[@id="stats"]/ul/li';
+        var stats = document.evaluate(
+            `concat(
+                ${xpath}[starts-with(text(), "Id: ")], '\n',
+                substring(normalize-space(${xpath}[starts-with(
+                            normalize-space(text()), "Posted: ")]), 1, 27), '\n',
+                ${xpath}[starts-with(text(), "Source: ")], '\n',
+                ${xpath}[starts-with(text(), "Rating: ")]
+            )`,
+            document, null, XPathResult.STRING_TYPE, null);
+
+        console.log(stats.stringValue);
+
+        var r = {};
+        for (const i of stats.stringValue.split('\n')) {
+            if (i == '')
+              continue;
+            var [key, value] = i.split(': ');
+            /* ... */
+            key = key.toLowerCase();
+            if (key == "source")
+                value = value.split(' ')
+            else if (key == "posted")
+                key = "date";
+            r[key] = value;
         }
 
-        let r = [];
-        r.push(infolist[0].innerText.replace('Id: ', ''));
-        r.push(infolist[1].innerText.match(
-            /.+[0-9]{2}:[0-9]{2}/)[0].replace("Posted: ", '')); // date
-        r.push(Array.from(infolist[3].querySelectorAll('a')).map(x => x.href)); // source(s)
-        r.push(infolist[4].innerText.replace('Rating: ', ''));
-
+        console.log(r)
         return r;
     }
 })();
