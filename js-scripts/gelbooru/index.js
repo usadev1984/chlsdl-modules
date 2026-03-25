@@ -22,7 +22,16 @@
     }
 
     function scrape() {
-        let url = "";
+        let url = document.querySelector('video#gelcomVideoPlayer > source[type="video/mp4"]');
+        if (url == null) {
+            url = document.querySelector('meta[property="og:image"]');
+            if (url == null) {
+                alert('url not found"' +url +'"')
+                return
+            }
+            url = url.content;
+        } else
+            url = url.src;
 
         /* source */
         var source = new URL(window.location.href);
@@ -37,6 +46,7 @@
         console.log(source);
 
         chlsdl_send_to_chlsdl(url, {
+            "url": url,
             "src": source,
         });
     }
