@@ -24,7 +24,20 @@
     function scrape() {
         let url = "";
 
+        /* source */
+        var source = new URL(window.location.href);
+        console.log(source.toString());
+
+        const allowed_params = ["page", "s", "id"];
+        for (const i of source.searchParams.keys())
+          if (!allowed_params.includes(i))
+              source.searchParams.delete(i);
+
+        source = source.toString();
+        console.log(source);
+
         chlsdl_send_to_chlsdl(url, {
+            "src": source,
         });
     }
 
