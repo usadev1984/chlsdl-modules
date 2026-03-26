@@ -118,6 +118,65 @@ to_gelbooru_info(gelbooru_info * info, const char * data)
     print_debug_warn("info->src: '%s'\n", info->src);
 }
 
+static void
+gelbooru_save_metadata(
+    const char * metadata_file, gelbooru_info info, json_object * post_info)
+{
+    json_object * obj = json_object_new_object();
+    assert(obj);
+
+    json_object_object_add(obj, "name", json_object_new_string(info.name));
+    json_object_object_add(obj, "src", json_object_new_string(info.src));
+
+    /* artist */
+    json_object_object_add(
+        obj, "artist", json_object_object_get(post_info, "artist"));
+
+    /* copyright */
+    json_object_object_add(
+        obj, "copyright", json_object_object_get(post_info, "copyright"));
+
+    /* character */
+    json_object_object_add(
+        obj, "character", json_object_object_get(post_info, "character"));
+
+    /* general */
+    json_object_object_add(
+        obj, "general", json_object_object_get(post_info, "general"));
+
+    /* metadata */
+    json_object_object_add(
+        obj, "metadata", json_object_object_get(post_info, "metadata"));
+
+    /* statistics */
+    json_object * statistics = lambda({
+        json_object * r     = json_object_new_object();
+        json_object * jinfo = json_object_object_get(post_info, "statistics");
+        assert(jinfo);
+
+        json_object_object_add(r, "id", json_object_object_get(jinfo, "id"));
+        json_object_object_add(
+            r, "date", json_object_object_get(jinfo, "date"));
+
+        json_object * source = json_object_object_get(jinfo, "source");
+        json_object_object_add(
+            r, "source", source ? source : json_object_new_array());
+
+        json_object_object_add(
+            r, "rating", json_object_object_get(jinfo, "rating"));
+        r;
+    });
+
+    json_object_object_add(obj, "statistics", statistics);
+
+    print_info("saving metadata to: '%s'\n", metadata_file);
+
+    write_buffer_to_file(metadata_file, 0,
+        json_object_to_json_string_ext(obj, JSON_C_TO_STRING_PRETTY));
+
+    json_object_put(obj);
+}
+
 void
 gelbooru_func(void * vargp)
 {
@@ -157,6 +216,10 @@ gelbooru_func(void * vargp)
 
     MOD_PRINT_AND_NOTIFY(print_info, "saving to: '%s'", out);
     write_buffer_to_file(out, buf->at, buf->data);
+
+    json_object * post_info = json_tokener_parse(data);
+    assert(post_info);
+    gelbooru_save_metadata(metadata_file, info, post_info);
 
     free(out);
 }
