@@ -6,10 +6,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define curl_request_get(url, buf, ...)                                        \
+    curl_request_get_args(                                                     \
+        url, buf, &(const struct curl_request_get_args) { __VA_ARGS__ })
+
 struct curl_buffer {
     size_t size;
     size_t at;
     char * data;
+};
+
+struct curl_request_get_args {
+    const char *  referer;
+    const char ** custom_headers; /* NULL-terminated array */
 };
 
 extern struct curl_buffer *
@@ -47,7 +56,8 @@ extern void
 set_curl_user_agent(const char * new_user_agent);
 
 extern int
-curl_request_get(const char * url, struct curl_buffer * buf);
+curl_request_get_args(const char * url, struct curl_buffer * buf,
+    const struct curl_request_get_args * args);
 extern int
 curl_request_post(const char * url, struct curl_buffer * buf,
     const char * postfields, curl_off_t postfieldsize_large);

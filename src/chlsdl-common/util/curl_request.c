@@ -101,7 +101,8 @@ curl_request_set_common_opts(CURL * curl, FILE ** curl_log)
 }
 
 int
-curl_request_get(const char * url, struct curl_buffer * buf)
+curl_request_get_args(const char * url, struct curl_buffer * buf,
+    const struct curl_request_get_args * args)
 {
     char curl_errbuf[CURL_ERROR_SIZE];
 
@@ -117,7 +118,24 @@ curl_request_get(const char * url, struct curl_buffer * buf)
     FILE * curl_log;
     curl_request_set_common_opts(curl, &curl_log);
 
+    if (args->referer)
+        curl_easy_setopt(curl, CURLOPT_REFERER, args->referer);
+
+    struct curl_slist * headers = NULL;
+    if (args->custom_headers) {
+        const char * header;
+        for (int i = 0; (header = args->custom_headers[i]); ++i) {
+            headers = curl_slist_append(headers, header);
+            if (!headers)
+                return CURLE_OUT_OF_MEMORY;
+        }
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    }
+
     int err = curl_easy_perform(curl);
+
+    if (args->custom_headers)
+        curl_slist_free_all(headers);
 
     fclose(curl_log);
     curl_easy_cleanup(curl);
