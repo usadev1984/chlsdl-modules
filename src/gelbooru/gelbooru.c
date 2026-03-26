@@ -151,4 +151,12 @@ gelbooru_func(void * vargp)
         != CURLE_OK)
         return (void)MOD_ERROR_AND_NOTIFY(
             print_error, "failed to download: '%s'", info.url);
+
+    char * out = svconcat("%s/%s", module_downloads_dir, info.name);
+    assert(out);
+
+    MOD_PRINT_AND_NOTIFY(print_info, "saving to: '%s'", out);
+    write_buffer_to_file(out, buf->at, buf->data);
+
+    free(out);
 }
