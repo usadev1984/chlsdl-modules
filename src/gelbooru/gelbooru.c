@@ -135,4 +135,20 @@ gelbooru_func(void * vargp)
     if (file_exists(metadata_file))
         return (void)MOD_PRINT_AND_NOTIFY(
             print_warn, "'%s' has already been downloaded", info.name);
+
+    __chlsdl_defer(__curl_buffer_dealloc) struct curl_buffer * buf
+        = curl_buffer_alloc(1024);
+
+    MOD_PRINT_AND_NOTIFY(print_info, "downloading: '%s'", info.url);
+
+    /* download post media */
+    const char * custom_headers[]
+        = { "Upgrade-Insecure-Requests: 1", "Sec-Fetch-Dest: document",
+              "Sec-Fetch-Mode: navigate", "Sec-Fetch-Site: same-site", NULL };
+
+    if (curl_request_get(info.url, buf, "https://gelbooru.com/",
+            .custom_headers = custom_headers)
+        != CURLE_OK)
+        return (void)MOD_ERROR_AND_NOTIFY(
+            print_error, "failed to download: '%s'", info.url);
 }
