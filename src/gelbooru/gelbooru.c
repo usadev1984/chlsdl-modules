@@ -8,6 +8,7 @@
 #include <chlsdl/macros.h>
 #include <chlsdl/module.h>
 #include <errno.h>
+#include <json-c/json.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -42,6 +43,12 @@
 #    define MOD_ERROR_AND_NOTIFY(print, fmt, ...)                              \
         print(fmt "\n" __VA_OPT__(, ) __VA_ARGS__)
 #endif
+
+typedef struct {
+    const char * url;
+    const char * name;
+    const char * src;
+} gelbooru_info;
 
 struct module g_libgelbooru = {
     gelbooru_deinit,
@@ -97,6 +104,20 @@ get_line_from_string(const char * s)
     return r;
 }
 
+static void
+to_gelbooru_info(gelbooru_info * info, const char * data)
+{
+    json_object * jdata = json_tokener_parse(data);
+    assert(jdata);
+    info->url  = json_object_get_string(json_object_object_get(jdata, "url"));
+    info->name = json_object_get_string(json_object_object_get(jdata, "name"));
+    info->src  = json_object_get_string(json_object_object_get(jdata, "src"));
+
+    print_debug_warn("info->url: '%s'\n", info->url);
+    print_debug_warn("info->name: '%s'\n", info->name);
+    print_debug_warn("info->src: '%s'\n", info->src);
+}
+
 void
 gelbooru_func(void * vargp)
 {
@@ -104,4 +125,7 @@ gelbooru_func(void * vargp)
     assert(orig_data);
 
     char * data = orig_data + strlen(get_line_from_string(orig_data));
+
+    gelbooru_info info;
+    to_gelbooru_info(&info, data);
 }
