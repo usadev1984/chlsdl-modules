@@ -128,4 +128,11 @@ gelbooru_func(void * vargp)
 
     gelbooru_info info;
     to_gelbooru_info(&info, data);
+
+    chlsdl_defer char * metadata_file
+        = svconcat("%s/%s.json", module_downloads_dir, info.name);
+
+    if (file_exists(metadata_file))
+        return (void)MOD_PRINT_AND_NOTIFY(
+            print_warn, "'%s' has already been downloaded", info.name);
 }
