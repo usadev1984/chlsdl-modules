@@ -6,6 +6,7 @@ modules repo for [[https://github.com/usadev1984/chlsdl][chlsdl]] which hosts mo
 ** supported sources
 - danbooru (images, gifs, videos)
 - r34 (images, gifs, videos)
+- gelbooru (images, gifs, videos)
 ** dependencies
 the full dependencies (some module may not depend on all of these) are:
 - pcre2
