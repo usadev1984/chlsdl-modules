@@ -6,7 +6,7 @@
 // @grant       clipboardWrite
 // @grant       GM_setClipboard
 // @grant       GM_xmlhttpRequest
-// @require     https://raw.githubusercontent.com/usadev1984/chlsdl-modules/refs/heads/latest/js-scripts/chlsdl-common/index.js
+// @require     https://raw.githubusercontent.com/usadev1984/chlsdl-modules/2afa7cac6623ac0b828a1893ebda93c18cd96f40/js-scripts/chlsdl-common/index.js
 // @version     1.0
 // @author      usadev1984
 // @description 11/15/2025, 10:43:14 AM
