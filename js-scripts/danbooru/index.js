@@ -110,19 +110,25 @@
     }
 
     function get_post_info() {
-        let infolist = document.querySelectorAll("#post-information > ul > li")
-        if (infolist.length == 0) {
-            alert('post information not found: "' + infolist +'"')
-            return []
-        }
+        const parent = document.querySelector("#post-information > ul");
+        let r = {};
 
-        infolist = Array.from(infolist).filter(
-            (x) => ['post-info-id', 'post-info-date', 'post-info-source', 'post-info-rating'].includes(x.id))
-        infolist[0] = infolist[0].innerText.replace(/ID: /, '') // post id
-        infolist[1] = Date.parse(infolist[1].querySelector('time').dateTime) / 1000 // date
-        infolist[2] = infolist[2].querySelector('a[href]').href // source
-        infolist[3] = infolist[3].innerText.replace(/Rating: /, '') // rating
+        var element = parent.querySelector(`li#post-info-id`);
+        if (element)
+            r["id"] = element.innerText.replace(/ID: /, '');
 
-        return infolist
+        element = parent.querySelector(`li#post-info-date time`);
+        if (element)
+            r["date"] = Date.parse(element.dateTime) / 1000;
+
+        element = parent.querySelector(`li#post-info-source > a[href]`);
+        if (element)
+            r["source"] = element.href;
+
+        element = parent.querySelector(`li#post-info-rating`);
+        if (element)
+            r["rating"] = element.innerText.replace(/Rating: /, '');
+
+        return r;
     }
 })();
