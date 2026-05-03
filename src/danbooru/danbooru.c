@@ -53,11 +53,10 @@ typedef struct {
     const char * name;
     const char * src;
 
-    const char * parent_id;
+    const char *  parent_id;
+    json_object * information;
 
     struct {
-        int           ninformation;
-        const char ** information;
         int           nchildren;
         const char ** children;
         int           nsiblings;
@@ -117,11 +116,9 @@ to_danbooru_info(danbooru_info * info, char * data)
         = json_object_get_string(json_object_object_get(jdata, "parent_id"));
     print_debug_warn("info->parent_id: '%s'\n", info->parent_id);
 
-    danbooru_load_to_array(jdata, "information", &info->taglists.ninformation,
-        &info->taglists.information);
-    for (int i = 0; i < info->taglists.ninformation; ++i)
-        print_debug_warn("info->taglists.information: '%s'\n",
-            info->taglists.information[i]);
+    info->information
+        = json_tokener_parse(json_object_object_get("information"));
+    assert(info->information);
 
     danbooru_load_to_array(
         jdata, "children", &info->taglists.nchildren, &info->taglists.children);
@@ -182,14 +179,14 @@ danbooru_save_metadata(const char * metadata_file, danbooru_info info,
     /* information */
     json_object * information = json_object_new_object();
 
-    json_object_object_add(information, "id",
-        json_object_new_string(info.taglists.information[0]));
-    json_object_object_add(information, "date",
-        json_object_new_string(info.taglists.information[1]));
+    json_object_object_add(
+        information, "id", json_object_object_get(info.information, "id"));
+    json_object_object_add(
+        information, "date", json_object_object_get(info.information, "date"));
     json_object_object_add(information, "source",
-        json_object_new_string(info.taglists.information[2]));
+        json_object_object_get(info.information, "source"));
     json_object_object_add(information, "rating",
-        json_object_new_string(info.taglists.information[3]));
+        json_object_object_get(info.information, "rating"));
 
     json_object_object_add(obj, "information", information);
 
