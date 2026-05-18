@@ -56,12 +56,8 @@ typedef struct {
     const char *  parent_id;
     json_object * information;
 
-    struct {
-        int           nchildren;
-        const char ** children;
-        int           nsiblings;
-        const char ** siblings;
-    } taglists;
+    json_object * children;
+    json_object * siblings;
 } danbooru_info;
 
 struct module g_libdanbooru = {
@@ -74,30 +70,6 @@ static const char * module_downloads_dir;
 static pcre2_code * g_whitespace_pattern;
 
 static int default_notification_timeout;
-
-static void
-danbooru_load_to_array(json_object * jdata, const char * jdata_key,
-    int * array_len, const char *** array)
-{
-    json_object * tmp = json_object_object_get(jdata, jdata_key);
-    if (!tmp) {
-        *array_len = 0;
-        *array     = NULL;
-        return;
-    }
-    int ntmp = json_object_array_length(tmp);
-
-    const char ** r = malloc(sizeof(*r) * ntmp);
-    assert(r);
-    for (int i = 0; i < ntmp; ++i) {
-        r[i]
-            = strdup(json_object_get_string(json_object_array_get_idx(tmp, i)));
-        assert(r[i]);
-    }
-
-    *array_len = ntmp;
-    *array     = r;
-}
 
 static void
 to_danbooru_info(danbooru_info * info, char * data)
@@ -119,17 +91,12 @@ to_danbooru_info(danbooru_info * info, char * data)
     info->information = json_object_object_get(jdata, "information");
     assert(info->information);
 
-    danbooru_load_to_array(
-        jdata, "children", &info->taglists.nchildren, &info->taglists.children);
-    for (int i = 0; i < info->taglists.nchildren; ++i)
-        print_debug_warn(
-            "info->taglists.children: '%s'\n", info->taglists.children[i]);
+    info->children = json_object_object_get(jdata, "children");
+    info->siblings = json_object_object_get(jdata, "siblings");
 
-    danbooru_load_to_array(
-        jdata, "siblings", &info->taglists.nsiblings, &info->taglists.siblings);
-    for (int i = 0; i < info->taglists.nsiblings; ++i)
-        print_debug_warn(
-            "info->taglists.siblings: '%s'\n", info->taglists.siblings[i]);
+    print_debug_warn("siblings: '%s'\n",
+        json_object_to_json_string_ext(
+            info->siblings, JSON_C_TO_STRING_PRETTY));
 }
 
 static void
@@ -228,27 +195,15 @@ danbooru_save_metadata(const char * metadata_file, danbooru_info info,
         else
             json_object_object_add(r, "parent_id", json_object_new_null());
 
-        if (!info.taglists.children)
+        if (!info.children)
             json_object_object_add(r, "children", json_object_new_null());
-        else {
-            json_object * arr
-                = json_object_new_array_ext(info.taglists.nchildren);
-            for (int i = 0; i < info.taglists.nchildren; ++i)
-                json_object_array_add(
-                    arr, json_object_new_string(info.taglists.children[i]));
-            json_object_object_add(r, "children", arr);
-        }
+        else
+            json_object_object_add(r, "children", info.children);
 
-        if (!info.taglists.siblings)
+        if (!info.siblings)
             json_object_object_add(r, "siblings", json_object_new_null());
-        else {
-            json_object * arr
-                = json_object_new_array_ext(info.taglists.nsiblings);
-            for (int i = 0; i < info.taglists.nsiblings; ++i)
-                json_object_array_add(
-                    arr, json_object_new_string(info.taglists.siblings[i]));
-            json_object_object_add(r, "siblings", arr);
-        }
+        else
+            json_object_object_add(r, "siblings", info.siblings);
         r;
     });
 
