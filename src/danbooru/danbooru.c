@@ -116,8 +116,7 @@ to_danbooru_info(danbooru_info * info, char * data)
         = json_object_get_string(json_object_object_get(jdata, "parent_id"));
     print_debug_warn("info->parent_id: '%s'\n", info->parent_id);
 
-    info->information
-        = json_tokener_parse(json_object_object_get("information"));
+    info->information = json_object_object_get(jdata, "information");
     assert(info->information);
 
     danbooru_load_to_array(
@@ -177,18 +176,7 @@ danbooru_save_metadata(const char * metadata_file, danbooru_info info,
     danbooru_load_taglist_to_array(obj, "meta", post_info, "tag_string_meta");
 
     /* information */
-    json_object * information = json_object_new_object();
-
-    json_object_object_add(
-        information, "id", json_object_object_get(info.information, "id"));
-    json_object_object_add(
-        information, "date", json_object_object_get(info.information, "date"));
-    json_object_object_add(information, "source",
-        json_object_object_get(info.information, "source"));
-    json_object_object_add(information, "rating",
-        json_object_object_get(info.information, "rating"));
-
-    json_object_object_add(obj, "information", information);
+    json_object_object_add(obj, "information", info.information);
 
     /* artist commentary */
     json_object * artist_commentary = lambda({
@@ -349,9 +337,9 @@ danbooru_func(void * vargp)
     }
 
     /* download artist commentary json */
-    chlsdl_defer char * commentary_url
-        = svconcat("https://danbooru.donmai.us/posts/%s/artist_commentary.json",
-            info.taglists.information[0]);
+    chlsdl_defer char * commentary_url = svconcat(
+        "https://danbooru.donmai.us/posts/%s/artist_commentary.json",
+        json_object_get_string(json_object_object_get(info.information, "id")));
     assert(commentary_url);
 
     __chlsdl_defer(__curl_buffer_dealloc) struct curl_buffer * buf
@@ -370,9 +358,9 @@ danbooru_func(void * vargp)
     }
 
     /* download post info json */
-    chlsdl_defer char * post_info_url
-        = svconcat("https://danbooru.donmai.us/posts/%s.json",
-            info.taglists.information[0]);
+    chlsdl_defer char * post_info_url = svconcat(
+        "https://danbooru.donmai.us/posts/%s.json",
+        json_object_get_string(json_object_object_get(info.information, "id")));
     assert(post_info_url);
 
     print_info("downloading post info: '%s'\n", post_info_url);
