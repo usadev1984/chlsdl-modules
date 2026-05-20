@@ -83,13 +83,13 @@
                 return post;
             })();
 
-            if (paren == post_info[0]) {
+            if (paren == post_info["id"]) {
                 console.warn('parent')
                 children = posts
             } else {
                 console.warn('child')
                 parent_id = paren;
-                siblings = posts.filter((x) => x != post_info[0]);
+                siblings = posts.filter((x) => x != post_info["id"]);
             }
         }
 
