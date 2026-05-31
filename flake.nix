@@ -33,6 +33,7 @@
             pcre2.dev
             json_c.dev
             curl.dev
+            openssl.dev
           ];
           hardeningDisable = [ "all" ];
         };

@@ -14,6 +14,7 @@ the full dependencies (some module may not depend on all of these) are:
 - curl
 - libnotify (optional. push notifications)
 - pkg-config (build-time only)
+- openssl (file integrity checking)
 ** building
 *** options
 - ~COLOR~: if you want colored output and your terminal has truecolor support, pass ~COLOR=1~ to ~make~ (recommended).
