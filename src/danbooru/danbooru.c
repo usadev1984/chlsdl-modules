@@ -271,6 +271,27 @@ get_line_from_string(const char * s)
     return r;
 }
 
+static bool
+verify_media(const struct curl_buffer * media, const char * file_name)
+{
+    char * copy = strdup(file_name);
+    assert(copy);
+    const char * md5 = lambda({
+        char * r = strrchr(copy, '_');
+        assert(r);
+        ++r;
+
+        char * c = strrchr(r, '.');
+        assert(c);
+        *c = '\0';
+        r;
+    });
+
+    bool r = md5sum_verify(media->at, media->data, md5);
+    free(copy);
+    return r;
+}
+
 void
 danbooru_func(void * vargp)
 {
@@ -343,9 +364,14 @@ danbooru_func(void * vargp)
         return;
     }
 
+    if (!verify_media(buf, info.name)) {
+        MOD_ERROR_AND_NOTIFY(
+            print_error, "md5 hash mismatch. not saving: '%s'", info.name);
+        return;
+    }
+
     char * out = svconcat("%s/%s", module_downloads_dir, info.name);
     assert(out);
-    /* TODO: check md5sum */
     print_info("saving to: '%s'\n", out);
     write_buffer_to_file(out, buf->at, buf->data);
 
