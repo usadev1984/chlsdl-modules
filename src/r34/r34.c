@@ -177,6 +177,22 @@ r34_save_metadata(
     json_object_put(obj);
 }
 
+static bool
+verify_media(const struct curl_buffer * media, const char * file_name)
+{
+    char * md5 = strdup(file_name);
+    assert(md5);
+    {
+        char * c = strrchr(md5, '.');
+        assert(c);
+        *c = '\0';
+    }
+
+    bool r = md5sum_verify(media->at, media->data, md5);
+    free(md5);
+    return r;
+}
+
 void
 r34_func(void * vargp)
 {
@@ -204,6 +220,18 @@ r34_func(void * vargp)
     if (curl_request_get(info.url, buf) != CURLE_OK)
         return (void)MOD_ERROR_AND_NOTIFY(
             print_error, "failed to download: '%s'", info.url);
+
+    /*
+     * FIXME: video hashes for whatever reason don't always match the file's
+     * name. no other choice but to skip checking their hashes entirely for now™
+     */
+    if (strcmp(strrchr(info.name, '.') + 1, "mp4") == 0)
+        print_warn("FIXME: skipping hash verification for mp4 file.\n");
+    else if (!verify_media(buf, info.name)) {
+        MOD_ERROR_AND_NOTIFY(
+            print_error, "md5 hash mismatch. not saving: '%s'", info.name);
+        return;
+    }
 
     char * out = svconcat("%s/%s", module_downloads_dir, info.name);
     assert(out);
