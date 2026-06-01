@@ -15,38 +15,8 @@
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
 
-#ifdef USE_LIBNOTIFY
-/*
- * TODO: we shouldn't have to re-define these two macros for every module. they
- * need to be improved too
- */
-#    define MOD_PRINT_AND_NOTIFY(print, fmt, ...)                              \
-        ({                                                                     \
-            char * body = svconcat(fmt __VA_OPT__(, ) __VA_ARGS__);            \
-            assert(body);                                                      \
-            print("%s\n", body);                                               \
-            chlsdl_notify_notification_show_new("chlsdl-danbooru", body,       \
-                .timeout = default_notification_timeout);                      \
-            free(body);                                                        \
-        })
-
-#    define MOD_ERROR_AND_NOTIFY(print, fmt, ...)                              \
-        ({                                                                     \
-            char * body = svconcat(fmt __VA_OPT__(, ) __VA_ARGS__);            \
-            assert(body);                                                      \
-            print("%s\n", body);                                               \
-            chlsdl_notify_notification_show_new("chlsdl-danbooru", body,       \
-                .timeout = default_notification_timeout,                       \
-                .urgency = chlsdl_notify_urgency_critical);                    \
-            free(body);                                                        \
-        })
-#else
-#    define MOD_PRINT_AND_NOTIFY(print, fmt, ...)                              \
-        print(fmt "\n" __VA_OPT__(, ) __VA_ARGS__)
-
-#    define MOD_ERROR_AND_NOTIFY(print, fmt, ...)                              \
-        print(fmt "\n" __VA_OPT__(, ) __VA_ARGS__)
-#endif
+#define __MOD_NOTIFY_MOD_NAME "danbooru"
+#include "../chlsdl-common/shared.h"
 
 typedef struct {
     const char * url;
