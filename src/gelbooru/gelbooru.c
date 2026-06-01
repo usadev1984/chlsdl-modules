@@ -177,6 +177,22 @@ gelbooru_save_metadata(
     json_object_put(obj);
 }
 
+static bool
+verify_media(const struct curl_buffer * media, const char * file_name)
+{
+    char * md5 = strdup(file_name);
+    assert(md5);
+    {
+        char * c = strrchr(md5, '.');
+        assert(c);
+        *c = '\0';
+    }
+
+    bool r = md5sum_verify(media->at, media->data, md5);
+    free(md5);
+    return r;
+}
+
 void
 gelbooru_func(void * vargp)
 {
@@ -210,6 +226,12 @@ gelbooru_func(void * vargp)
         != CURLE_OK)
         return (void)MOD_ERROR_AND_NOTIFY(
             print_error, "failed to download: '%s'", info.url);
+
+    if (!verify_media(buf, info.name)) {
+        MOD_ERROR_AND_NOTIFY(
+            print_error, "md5 hash mismatch. not saving: '%s'", info.name);
+        return;
+    }
 
     char * out = svconcat("%s/%s", module_downloads_dir, info.name);
     assert(out);
