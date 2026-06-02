@@ -16,6 +16,14 @@
 
 #define __MOD_NOTIFY_MOD_NAME "bunkr"
 
+typedef struct {
+    const char * url;
+    const char * name;
+    const char * src;
+
+    json_object * post_info;
+} bunkr_info;
+
 struct module g_libbunkr = {
     bunkr_deinit,
     bunkr_func,
@@ -24,6 +32,23 @@ struct module g_libbunkr = {
 static const char * module_downloads_dir;
 
 static int default_notification_timeout;
+
+static void
+to_bunkr_info(bunkr_info * info, char * data)
+{
+    json_object * jdata = json_tokener_parse(data);
+    assert(jdata);
+    info->url  = json_object_get_string(json_object_object_get(jdata, "url"));
+    info->name = json_object_get_string(json_object_object_get(jdata, "name"));
+    info->src = json_object_get_string(json_object_object_get(jdata, "source"));
+
+    print_debug_warn("info->url: '%s'\n", info->url);
+    print_debug_warn("info->name: '%s'\n", info->name);
+    print_debug_warn("info->src: '%s'\n", info->src);
+
+    info->post_info = json_object_object_get(jdata, "post_info");
+    assert(info->post_info);
+}
 
 const struct module *
 bunkr_init(const struct chlsdl_data * cdata)
@@ -56,9 +81,26 @@ bunkr_deinit()
     free(g_libbunkr.regex.pattern);
 }
 
+static char *
+get_line_from_string(const char * s)
+{
+    const char * nl = strchr(s, '\n');
+    if (!nl)
+        return NULL;
+
+    char * r = strndup(s, nl - s);
+    assert(r);
+    return r;
+}
+
 void
 bunkr_func(void * vargp)
 {
     chlsdl_defer char * orig_data = strdup(vargp);
     assert(orig_data);
+
+    char * data = orig_data + strlen(get_line_from_string(orig_data));
+
+    bunkr_info info;
+    to_bunkr_info(&info, data);
 }
