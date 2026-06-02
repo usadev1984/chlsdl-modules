@@ -113,4 +113,23 @@ bunkr_func(void * vargp)
             print_warn, "'%s' has already been downloaded", info.name);
         return;
     }
+
+    __chlsdl_defer(__curl_buffer_dealloc) struct curl_buffer * buf
+        = curl_buffer_alloc(MEGABYTES_TO_BYTES(2));
+    assert(buf);
+
+    print_info("downloading: '%s'\n", info.url);
+
+    /* download media */
+    if (curl_request_get(info.url, .writer = { buf }) != CURLE_OK) {
+        MOD_ERROR_AND_NOTIFY(print_error, "failed to download: '%s'", info.url);
+        return;
+    }
+
+    char * out = svconcat("%s/%s", module_downloads_dir, info.name);
+    assert(out);
+    print_info("saving to: '%s'\n", out);
+    write_buffer_to_file(out, buf->at, buf->data);
+
+    free(out);
 }
