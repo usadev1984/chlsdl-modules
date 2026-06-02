@@ -51,6 +51,13 @@
             "url": url,
             "name": name,
             "source": source,
+            "post_info": get_post_info(),
         });
+    }
+
+    function get_post_info() {
+        let r = {};
+        r["album"] = document.querySelector('h2.files-album > a').href;
+        return r;
     }
 })();
