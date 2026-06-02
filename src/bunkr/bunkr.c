@@ -15,6 +15,7 @@
 #include <pcre2.h>
 
 #define __MOD_NOTIFY_MOD_NAME "bunkr"
+#include "../chlsdl-common/shared.h"
 
 typedef struct {
     const char * url;
@@ -103,4 +104,13 @@ bunkr_func(void * vargp)
 
     bunkr_info info;
     to_bunkr_info(&info, data);
+
+    chlsdl_defer char * metadata_file
+        = svconcat("%s/%s.json", module_downloads_dir, info.name);
+
+    if (file_exists(metadata_file)) {
+        MOD_PRINT_AND_NOTIFY(
+            print_warn, "'%s' has already been downloaded", info.name);
+        return;
+    }
 }
