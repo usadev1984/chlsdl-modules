@@ -23,14 +23,23 @@
     }
 
     function scrape() {
-        let url = document.querySelector('#img-enlarge'); // document.querySelector('a[class*="btn"][class*="ic-download"]')
+        // let url = document.querySelector('#player > source');
+        // if (url == null) {
+        //     url = document.querySelector('#img-enlarge'); // document.querySelector('a[class*="btn"][class*="ic-download"]')
+        //     if (url == null) {
+        //         url = document.querySelector('a[class*="btn"][class*="ic-download"]')
+        //     }
+        //     url = url.href;
+        // } else
+        //     url = url.src;
+        let url = document.querySelector('a[class*="btn"][class*="ic-download"]');
         if (url == null) {
-            alert('url not found"' + url +'"')
-            return
-        } else {
+            alert('url not found"' + url + '"');
+            return;
+        } else
             url = url.href;
-            console.log(url)
-        }
+
+        console.log(url)
 
         let name = document.querySelector('h1').innerText
 
