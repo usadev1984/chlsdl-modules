@@ -73,6 +73,26 @@ bunkr_init(const struct chlsdl_data * cdata)
     return &g_libbunkr;
 }
 
+static void
+bunkr_save_metadata(const char * metadata_file, bunkr_info info)
+{
+    json_object * obj = json_object_new_object();
+    assert(obj);
+
+    json_object_object_add(obj, "name", json_object_new_string(info.name));
+    json_object_object_add(obj, "src", json_object_new_string(info.src));
+
+    /* extra shit */
+    json_object_object_add(obj, "_", info.post_info);
+
+    print_info("saving metadata to: '%s'\n", metadata_file);
+
+    write_buffer_to_file(metadata_file, 0,
+        json_object_to_json_string_ext(obj, JSON_C_TO_STRING_PRETTY));
+
+    json_object_put(obj);
+}
+
 void
 bunkr_deinit()
 {
@@ -130,6 +150,8 @@ bunkr_func(void * vargp)
     assert(out);
     print_info("saving to: '%s'\n", out);
     write_buffer_to_file(out, buf->at, buf->data);
+
+    bunkr_save_metadata(metadata_file, info);
 
     free(out);
 }
