@@ -21,6 +21,10 @@ struct curl_request_get_args {
     const char ** custom_headers; /* NULL-terminated array */
 };
 
+struct curl_request_post_args {
+    curl_off_t postfieldsize_large;
+};
+
 extern struct curl_buffer *
 curl_buffer_alloc(size_t n);
 
