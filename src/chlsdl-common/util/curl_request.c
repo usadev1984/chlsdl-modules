@@ -102,6 +102,29 @@ curl_request_set_common_opts(CURL * curl, FILE ** curl_log)
         curl_easy_setopt(curl, CURLOPT_STDERR, *curl_log);
 }
 
+static int
+curl_request_set_common_args(CURL * curl, const void * pargs)
+{
+    const __DECLARE_CURL_REQUEST_COMMON * args = pargs;
+
+    if (args->referer)
+        curl_easy_setopt(curl, CURLOPT_REFERER, args->referer);
+
+    if (args->custom_headers) {
+        struct curl_slist * headers = NULL;
+        const char *        header;
+        for (int i = 0; (header = args->custom_headers[i]); ++i) {
+            headers = curl_slist_append(headers, header);
+            if (!headers)
+                return CURLE_OUT_OF_MEMORY;
+        }
+        curl_easy_setopt(
+            curl, CURLOPT_HTTPHEADER, headers); /* TODO: free this later */
+    }
+
+    return CURLE_OK;
+}
+
 int
 curl_request_get_args(const char * url, struct curl_buffer * buf,
     const struct curl_request_get_args * args)
@@ -120,25 +143,13 @@ curl_request_get_args(const char * url, struct curl_buffer * buf,
     FILE * curl_log;
     curl_request_set_common_opts(curl, &curl_log);
 
-    if (args->referer)
-        curl_easy_setopt(curl, CURLOPT_REFERER, args->referer);
+    int err;
+    if ((err = curl_request_set_common_args(curl, args)) != CURLE_OK)
+        goto cleanup;
 
-    struct curl_slist * headers = NULL;
-    if (args->custom_headers) {
-        const char * header;
-        for (int i = 0; (header = args->custom_headers[i]); ++i) {
-            headers = curl_slist_append(headers, header);
-            if (!headers)
-                return CURLE_OUT_OF_MEMORY;
-        }
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    }
+    err = curl_easy_perform(curl);
 
-    int err = curl_easy_perform(curl);
-
-    if (args->custom_headers)
-        curl_slist_free_all(headers);
-
+cleanup:
     if (curl_log)
         fclose(curl_log);
     curl_easy_cleanup(curl);
@@ -146,8 +157,8 @@ curl_request_get_args(const char * url, struct curl_buffer * buf,
 }
 
 int
-curl_request_post(const char * url, struct curl_buffer * buf,
-    const char * postfields, curl_off_t postfieldsize_large)
+curl_request_post_args(const char * url, struct curl_buffer * buf,
+    const void * postfields, const struct curl_request_post_args * args)
 {
     char curl_errbuf[CURL_ERROR_SIZE];
 
@@ -156,8 +167,9 @@ curl_request_post(const char * url, struct curl_buffer * buf,
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
     if (postfields) {
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postfields);
-        curl_easy_setopt(
-            curl, CURLOPT_POSTFIELDSIZE_LARGE, postfieldsize_large);
+        if (args->postfieldsize_large > 0)
+            curl_easy_setopt(
+                curl, CURLOPT_POSTFIELDSIZE_LARGE, args->postfieldsize_large);
     }
 
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_errbuf);
@@ -169,8 +181,13 @@ curl_request_post(const char * url, struct curl_buffer * buf,
     FILE * curl_log;
     curl_request_set_common_opts(curl, &curl_log);
 
-    int err = curl_easy_perform(curl);
+    int err;
+    if ((err = curl_request_set_common_args(curl, args)) != CURLE_OK)
+        goto cleanup;
 
+    err = curl_easy_perform(curl);
+
+cleanup:
     if (curl_log)
         fclose(curl_log);
     curl_easy_cleanup(curl);

@@ -10,6 +10,10 @@
     curl_request_get_args(                                                     \
         url, buf, &(const struct curl_request_get_args) { __VA_ARGS__ })
 
+#define curl_request_post(url, buf, postfields, ...)                           \
+    curl_request_post_args(url, buf, postfields,                               \
+        &(const struct curl_request_post_args) { __VA_ARGS__ })
+
 struct curl_buffer {
     size_t size;
     size_t at;
@@ -73,7 +77,7 @@ extern int
 curl_request_get_args(const char * url, struct curl_buffer * buf,
     const struct curl_request_get_args * args);
 extern int
-curl_request_post(const char * url, struct curl_buffer * buf,
-    const char * postfields, curl_off_t postfieldsize_large);
+curl_request_post_args(const char * url, struct curl_buffer * buf,
+    const void * postfields, const struct curl_request_post_args * args);
 
 #endif // CURL_REQUEST_H_
