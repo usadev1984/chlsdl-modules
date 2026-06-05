@@ -1,4 +1,5 @@
 #include <chlsdl-modules/chlsdl-common/print.h>
+#define __KEEP_DECLARE_CURL_REQUEST_COMMON
 #include <chlsdl-modules/chlsdl-common/util/curl_request.h>
 #include <chlsdl/macros.h>
 #include <curl/curl.h>

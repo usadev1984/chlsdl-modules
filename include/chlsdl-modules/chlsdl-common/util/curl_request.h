@@ -16,14 +16,24 @@ struct curl_buffer {
     char * data;
 };
 
+#define __DECLARE_CURL_REQUEST_COMMON                                          \
+    struct {                                                                   \
+        const char *  referer;                                                 \
+        const char ** custom_headers; /* NULL-terminated array */              \
+    }
+
 struct curl_request_get_args {
-    const char *  referer;
-    const char ** custom_headers; /* NULL-terminated array */
+    __DECLARE_CURL_REQUEST_COMMON;
 };
 
 struct curl_request_post_args {
+    __DECLARE_CURL_REQUEST_COMMON;
     curl_off_t postfieldsize_large;
 };
+
+#ifndef __KEEP_DECLARE_CURL_REQUEST_COMMON
+#    undef __DECLARE_CURL_REQUEST_COMMON
+#endif
 
 extern struct curl_buffer *
 curl_buffer_alloc(size_t n);
