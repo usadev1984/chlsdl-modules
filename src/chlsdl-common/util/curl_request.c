@@ -6,7 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const char * logfile_path;
+static const char * logfile_path; /* maybe each request should use its own
+                                   * log file? */
 static const char * user_agent;
 
 struct curl_buffer *
@@ -91,7 +92,8 @@ curl_request_set_common_opts(CURL * curl, FILE ** curl_log)
     if (user_agent)
         curl_easy_setopt(curl, CURLOPT_USERAGENT, user_agent);
 
-    *curl_log = fopen(logfile_path, "w");
+    *curl_log = fopen(logfile_path, "w"); /* should we even bother logging
+                                           * in release builds? */
     if (!*curl_log) {
         print_debug_error("failed to open file\n");
         exit(1);
