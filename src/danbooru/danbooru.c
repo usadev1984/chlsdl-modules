@@ -194,11 +194,12 @@ danbooru_init(const struct chlsdl_data * cdata)
 
     /*
      * downloading mp4's directly doesn't work for whatever reason, so the
-     * pattern will have to reflect the fact we need a specific url idk
+     * pattern will have to reflect the fact we need a specific url idk.
+     * apparently, danbooru serves certain files as zip too...
      */
     g_libdanbooru.regex.pattern = pcre2_compile(
         (PCRE2_SPTR8) "https://cdn\\.donmai\\.us/original/"
-                      ".*\\.(?:png|jpg|jpeg|gif|mp4\\?download=\\d)",
+                      ".*\\.(?:png|jpg|jpeg|gif|(?:mp4|zip)\\?download=\\d)",
         PCRE2_ZERO_TERMINATED, 0, &(int) { 0 }, &(PCRE2_SIZE) { 0 }, NULL);
     assert(g_libdanbooru.regex.pattern);
     g_libdanbooru.regex.md = pcre2_match_data_create_from_pattern(
