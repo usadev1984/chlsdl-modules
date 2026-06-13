@@ -40,5 +40,6 @@ sudo make install MODULES="lib${mod_1} lib${mod_2}"
 - [ ] fix building on nixos
 - [ ] fix build system
   - [ ] figure out a good project structure
+- [ ] restructure modules so that they only parse the js data and provide the main program with the necessary info to download the files and save their metadata
 - [X] support videos and gifs from danbooru
 - [X] add support for r34
