@@ -94,12 +94,11 @@ curl_request_set_common_opts(CURL * curl, FILE ** curl_log)
 
     *curl_log = fopen(logfile_path, "w"); /* should we even bother logging
                                            * in release builds? */
-    if (!*curl_log) {
-        print_debug_error("failed to open file\n");
-        exit(1);
-    }
-
-    curl_easy_setopt(curl, CURLOPT_STDERR, *curl_log);
+    if (!*curl_log)
+        print_warn(
+            "failed to log file: '%s'. continuing anyway...\n", logfile_path);
+    else
+        curl_easy_setopt(curl, CURLOPT_STDERR, *curl_log);
 }
 
 int
@@ -139,7 +138,8 @@ curl_request_get_args(const char * url, struct curl_buffer * buf,
     if (args->custom_headers)
         curl_slist_free_all(headers);
 
-    fclose(curl_log);
+    if (curl_log)
+        fclose(curl_log);
     curl_easy_cleanup(curl);
     return err;
 }
@@ -170,7 +170,8 @@ curl_request_post(const char * url, struct curl_buffer * buf,
 
     int err = curl_easy_perform(curl);
 
-    fclose(curl_log);
+    if (curl_log)
+        fclose(curl_log);
     curl_easy_cleanup(curl);
     return err;
 }
