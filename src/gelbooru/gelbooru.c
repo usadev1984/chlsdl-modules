@@ -195,7 +195,8 @@ gelbooru_func(void * vargp)
         = { "Upgrade-Insecure-Requests: 1", "Sec-Fetch-Dest: document",
               "Sec-Fetch-Mode: navigate", "Sec-Fetch-Site: same-site", NULL };
 
-    if (curl_request_get(info.url, buf, "https://gelbooru.com/",
+    if (curl_request_get(info.url, .writer = { buf },
+            .referer        = "https://gelbooru.com/",
             .custom_headers = custom_headers)
         != CURLE_OK)
         return (void)MOD_ERROR_AND_NOTIFY(
