@@ -290,7 +290,7 @@ danbooru_func(void * vargp)
 
     __chlsdl_defer(__curl_buffer_dealloc) struct curl_buffer * buf
         = curl_buffer_alloc(1024);
-    if (curl_request_get(commentary_url, buf) != CURLE_OK) {
+    if (curl_request_get(commentary_url, .writer = { buf }) != CURLE_OK) {
         print_error(
             "failed to download artist commentary: '%s'\n", commentary_url);
         return;
@@ -312,7 +312,7 @@ danbooru_func(void * vargp)
     print_info("downloading post info: '%s'\n", post_info_url);
 
     buf->at = 0; /* re-use buffer */
-    if (curl_request_get(post_info_url, buf) != CURLE_OK) {
+    if (curl_request_get(post_info_url, .writer = { buf }) != CURLE_OK) {
         MOD_ERROR_AND_NOTIFY(
             print_error, "failed to download post info: '%s'", post_info_url);
         return;
@@ -329,7 +329,7 @@ danbooru_func(void * vargp)
 
     /* download post media */
     buf->at = 0; /* re-use buffer */
-    if (curl_request_get(info.url, buf) != CURLE_OK) {
+    if (curl_request_get(info.url, .writer = { buf }) != CURLE_OK) {
         MOD_ERROR_AND_NOTIFY(print_error, "failed to download: '%s'", info.url);
         return;
     }
