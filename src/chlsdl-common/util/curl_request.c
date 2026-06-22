@@ -126,8 +126,8 @@ curl_request_set_common_args(CURL * curl, const void * pargs)
 }
 
 int
-curl_request_get_args(const char * url, struct curl_buffer * buf,
-    const struct curl_request_get_args * args)
+curl_request_get_args(
+    const char * url, const struct curl_request_get_args * args)
 {
     char curl_errbuf[CURL_ERROR_SIZE];
 
@@ -135,8 +135,16 @@ curl_request_get_args(const char * url, struct curl_buffer * buf,
     curl_easy_setopt(curl, CURLOPT_URL, url);
 
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_errbuf);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, buf);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_buffer);
+
+    switch (args->writer.type) {
+    case writer_buffer:
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, args->writer.buf);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_buffer);
+        break;
+    case writer_file:
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, args->writer.file);
+        break;
+    }
 
     curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 102400L);
 

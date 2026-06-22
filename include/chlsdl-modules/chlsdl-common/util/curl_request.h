@@ -3,12 +3,13 @@
 
 #include <chlsdl/macros.h>
 #include <curl/curl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define curl_request_get(url, buf, ...)                                        \
+#define curl_request_get(url, ...)                                             \
     curl_request_get_args(                                                     \
-        url, buf, &(const struct curl_request_get_args) { __VA_ARGS__ })
+        url, &(const struct curl_request_get_args) { __VA_ARGS__ })
 
 #define curl_request_post(url, buf, postfields, ...)                           \
     curl_request_post_args(url, buf, postfields,                               \
@@ -28,6 +29,15 @@ struct curl_buffer {
 
 struct curl_request_get_args {
     __DECLARE_CURL_REQUEST_COMMON;
+
+    struct {
+        union {
+            struct curl_buffer * buf;
+            FILE *               file;
+        };
+
+        enum { writer_buffer, writer_file } type;
+    } writer;
 };
 
 struct curl_request_post_args {
@@ -74,8 +84,8 @@ extern void
 set_curl_user_agent(const char * new_user_agent);
 
 extern int
-curl_request_get_args(const char * url, struct curl_buffer * buf,
-    const struct curl_request_get_args * args);
+curl_request_get_args(
+    const char * url, const struct curl_request_get_args * args);
 extern int
 curl_request_post_args(const char * url, struct curl_buffer * buf,
     const void * postfields, const struct curl_request_post_args * args);
