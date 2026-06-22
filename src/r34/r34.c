@@ -191,7 +191,7 @@ r34_func(void * vargp)
     MOD_PRINT_AND_NOTIFY(print_info, "downloading: '%s'", info.url);
 
     /* download post media */
-    if (curl_request_get(info.url, buf) != CURLE_OK)
+    if (curl_request_get(info.url, .writer = { buf }) != CURLE_OK)
         return (void)MOD_ERROR_AND_NOTIFY(
             print_error, "failed to download: '%s'", info.url);
 
