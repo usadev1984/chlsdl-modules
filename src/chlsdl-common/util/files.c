@@ -52,10 +52,10 @@ md5sum_verify(size_t n, const void * data, const char * md5)
     assert(EVP_Digest(data, n, sum, NULL, g_md5_type, NULL) == 1);
 
 #ifdef DEBUG
-    print_debug_warn("calculated md5sum (%d):\n", MD5_SUM_MAX);
+    printf("calculated md5sum (%d):\n", MD5_SUM_MAX);
     for (int i = 0; i < sizeof(sum); ++i)
         printf("%02x", sum[i]);
-    print_debug_warn("\n");
+    printf("\n");
 #endif
 
     unsigned char hex[MD5_SUM_MAX];
