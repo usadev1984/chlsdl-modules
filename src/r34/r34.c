@@ -162,6 +162,15 @@ verify_media(const struct curl_buffer * media, const char * file_name)
         *c = '\0';
     }
 
+    /*
+     * FIXME: some file names are too long to be the md5 hash.
+     */
+    if (strlen(md5) == (MD5_SUM_MAX * 2) + 8) {
+        print_debug_warn(
+            "file name is not a valid hash. skipping hash verification...\n");
+        return true;
+    }
+
     bool r = md5sum_verify(media->at, media->data, md5);
     free(md5);
     return r;
