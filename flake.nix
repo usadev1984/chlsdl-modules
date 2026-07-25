@@ -41,7 +41,20 @@
           pname = "chlsdl-modules";
           version = "0.0.1";
 
-          src = ./.;
+          src = pkgs.nix-gitignore.gitignoreSourcePure ''
+            *
+
+            !**/Makefile
+            !**/config.mk
+
+            !src
+            !src/**
+            !src/**/*.[ch]
+
+            !include
+            !include/chlsdl-modules
+            !include/chlsdl-modules/**
+            !include/chlsdl-modules/**/*.[ch]'' ./.;
 
           outputs = [ "out" "dev" ];
 
