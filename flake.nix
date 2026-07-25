@@ -28,12 +28,12 @@
             pkgs.gcc
           ];
           buildInputs = with pkgs; [
-            xorg.libX11.dev
-            libxmu.dev
-            pcre2.dev
-            json_c.dev
-            curl.dev
-            openssl.dev
+            xorg.libX11
+            libxmu
+            pcre2
+            json_c
+            curl
+            libnotify
           ];
           hardeningDisable = [ "all" ];
         };
@@ -43,19 +43,26 @@
 
           src = ./.;
 
-          buildInputs = with pkgs; [
-            xorg.libX11.dev
-            libxmu.dev
-            pcre2.dev
-            json_c.dev
+          outputs = [ "out" "dev" ];
+
+          # needed because certain public headers may include headers from
+          # programs the main program may not depend on
+          propagatedNativeBuildInputs = with pkgs; [
             curl.dev
           ];
 
+          buildInputs = with pkgs; [
+            xorg.libX11
+            libxmu
+            pcre2
+            json_c
+            curl
+            libnotify
+          ];
+
           buildPhase = ''
-            echo FIXME
-            exit 1
-            make -B libchlsdl-common COLOR=1
-            make -B release COLOR=1
+            make libchlsdl-common COLOR=1
+            make modules COLOR=1
           '';
           installPhase = ''
             make install PREFIX=$out
