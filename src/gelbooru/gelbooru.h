@@ -1,7 +1,7 @@
 #ifndef GELBOORU_H_
 #define GELBOORU_H_
 
-#include <chlsdl/module.h>
+#include <chlsdl-modules/chlsdl-common/module.h>
 
 extern struct module g_libgelbooru;
 

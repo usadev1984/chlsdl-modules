@@ -1,7 +1,7 @@
 #ifndef BUNKR_H_
 #define BUNKR_H_
 
-#include <chlsdl/module.h>
+#include <chlsdl-modules/chlsdl-common/module.h>
 
 extern struct module g_libbunkr;
 

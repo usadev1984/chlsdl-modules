@@ -1,7 +1,7 @@
 #ifndef CURL_REQUEST_H_
 #define CURL_REQUEST_H_
 
-#include <chlsdl/macros.h>
+#include <chlsdl-modules/chlsdl-common/macros.h>
 #include <curl/curl.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,7 +1,7 @@
 #ifndef FILES_H_
 #define FILES_H_
 
-#include <chlsdl/macros.h>
+#include <chlsdl-modules/chlsdl-common/macros.h>
 #include <string.h>
 #include <unistd.h>
 

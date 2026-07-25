@@ -1,7 +1,7 @@
 #ifndef DANBOORU_H_
 #define DANBOORU_H_
 
-#include <chlsdl/module.h>
+#include <chlsdl-modules/chlsdl-common/module.h>
 
 extern struct module g_libdanbooru;
 

@@ -5,8 +5,8 @@
 #include <chlsdl-modules/chlsdl-common/print.h>
 #include <chlsdl-modules/chlsdl-common/util/notify.h>
 #include <chlsdl-modules/chlsdl-common/util/util.h>
-#include <chlsdl/macros.h>
-#include <chlsdl/module.h>
+#include <chlsdl-modules/chlsdl-common/macros.h>
+#include <chlsdl-modules/chlsdl-common/module.h>
 #include <errno.h>
 #include <json-c/json.h>
 #include <stdlib.h>
