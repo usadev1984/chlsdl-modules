@@ -37,50 +37,10 @@
           ];
           hardeningDisable = [ "all" ];
         };
-        packages.default = pkgs.stdenv.mkDerivation rec {
-          pname = "chlsdl-modules";
-          version = "0.0.1";
-
-          src = pkgs.nix-gitignore.gitignoreSourcePure ''
-            *
-
-            !**/Makefile
-            !**/config.mk
-
-            !src
-            !src/**
-            !src/**/*.[ch]
-
-            !include
-            !include/chlsdl-modules
-            !include/chlsdl-modules/**
-            !include/chlsdl-modules/**/*.[ch]'' ./.;
-
-          outputs = [ "out" "dev" ];
-
-          # needed because certain public headers may include headers from
-          # programs the main program may not depend on
-          propagatedNativeBuildInputs = with pkgs; [
-            curl.dev
-          ];
-
-          buildInputs = with pkgs; [
-            xorg.libX11
-            libxmu
-            pcre2
-            json_c
-            curl
-            libnotify
-          ];
-
-          buildPhase = ''
-            make libchlsdl-common COLOR=1
-            make modules COLOR=1
-          '';
-          installPhase = ''
-            make install PREFIX=$out
-          '';
-          hardeningDisable = [ "all" ];
+        packages = {
+          default = self.packages.${system}.chlsdl-modules;
+          chlsdl-modules-debug = self.packages.${system}.chlsdl-modules.override {isDebug = true;};
+          chlsdl-modules = pkgs.callPackage ./package.nix {};
         };
       }
     );
