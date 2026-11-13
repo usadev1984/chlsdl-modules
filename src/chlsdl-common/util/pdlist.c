@@ -108,6 +108,39 @@ pdlist_node_insert(struct pdlist_node * node, struct pdlist_node * prev,
     node->next = next;
 }
 
+static inline void
+pdlist_node_insert_after(struct pdlist_node * node, struct pdlist_node * prev)
+{
+    prev->next = node;
+    node->prev = prev;
+}
+
+static inline struct pdlist_node *
+pdlist_find_last(const struct pdlist * list)
+{
+    const struct pdlist_node * r = list->first;
+    while (r->next)
+        r = r->next;
+    return (struct pdlist_node *)r;
+}
+
+static bool
+pdlist_resize(struct pdlist * list, size_t old_size, struct pdlist_node * last)
+{
+    struct pdlist_node * new = pdlist_node_create(old_size * 0.5);
+    if (!new)
+        return false;
+
+    if (!last)
+        if (!(last = pdlist_find_last(list)))
+            return false;
+
+    assert(!last->next);
+    pdlist_node_insert_after(new, last);
+    list->size += old_size * 0.5;
+    return true;
+}
+
 bool
 pdlist_push(
     struct pdlist * list, const void * data, enum pdlist_node_priority priority)
@@ -132,8 +165,11 @@ pdlist_push(
     struct pdlist_node * empty = pdlist_node_first_empty(next_node);
     assert(empty);
 
-    if (!empty->next)
-        return false; /* TODO: resize */
+    if (!empty->next) {
+        print_debug_warn("resizing\n");
+        if (!pdlist_resize(list, list->size, empty))
+            return false;
+    }
 
     pdlist_node_remove(empty);
 
