@@ -26,6 +26,10 @@ struct pdlist {
 extern struct pdlist *
 pdlist_create(size_t n);
 
+extern bool
+pdlist_push(struct pdlist * list, const void * data,
+    enum pdlist_node_priority priority);
+
 extern void
 pdlist_destroy(struct pdlist * pdlist);
 
