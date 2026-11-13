@@ -23,6 +23,9 @@ struct pdlist {
     size_t               size; /* for resizing only */
 };
 
+extern void
+pdlist_dump(const struct pdlist * list);
+
 extern struct pdlist *
 pdlist_create(size_t n);
 

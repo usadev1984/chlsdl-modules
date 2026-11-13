@@ -2,8 +2,50 @@
 
 #include <assert.h>
 #include <chlsdl-modules/chlsdl-common/print.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define MAX(a, b) ((a) >= (b) ? (a) : (b))
+#define PTRBYTES  (6)
+#define PTRFMT    (PTRBYTES * 2 + 2)
+
+/* ... */
+void
+pdlist_dump(const struct pdlist * list)
+{
+    static const char * col_idx      = "idx";
+    int                 col_idx_len  = MAX(strlen("idx"), 0);
+    static const char * col_priority = "priority";
+    /* int col_priority_len = MAX(strlen("priority"), PTRBYTES * 2 + 3); */
+    static const char * col_address = "address";
+    int col_address_len             = MAX(strlen("address"), PTRBYTES * 2 + 3);
+    static const char * col_prev_address = "prev address";
+    int col_prev_address_len = MAX(strlen("prev address"), PTRBYTES * 2 + 3);
+    static const char * col_next_address = "next address";
+    int col_next_address_len = MAX(strlen("next address"), PTRBYTES * 2 + 3);
+    static const char * col_data     = "data";
+    int                 col_data_len = MAX(strlen("data"), PTRBYTES * 2 + 3);
+
+    /* clang-format off */
+    printf("%-*s|%-*s|%-*s|%-*s|%-*s|%-*s\n",
+        col_idx_len,          col_idx,
+        col_address_len,      col_address,
+        col_prev_address_len, col_prev_address,
+        col_next_address_len, col_next_address,
+        col_data_len,         col_data,
+        0,     col_priority
+    );
+
+    const struct pdlist_node * node = list->first;
+    for (int i = 0; node; node = node->next)
+        printf("%02d, %p, %*p, %*p, %*p, %d\n", i++, node,
+               (int)PTRFMT, node->prev,
+               (int)PTRFMT, node->next,
+               (int)PTRFMT, node->data,
+               node->priority);
+    /* clang-format on */
+}
 
 static inline void
 pdlist_node_zero(struct pdlist_node * node)
