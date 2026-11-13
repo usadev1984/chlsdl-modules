@@ -35,7 +35,7 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = with pkgs; [
-    xorg.libX11
+    libX11
     libxmu
     pcre2
     json_c

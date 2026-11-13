@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     # nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
   };
@@ -28,7 +28,7 @@
             pkgs.gcc
           ];
           buildInputs = with pkgs; [
-            xorg.libX11
+            libX11
             libxmu
             pcre2
             json_c
