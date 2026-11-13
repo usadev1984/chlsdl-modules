@@ -186,6 +186,27 @@ pdlist_push(
     return true;
 }
 
+bool
+pdlist_pop(struct pdlist * list, struct pdlist_node * r)
+{
+    struct pdlist_node * node = list->first;
+    if (pdlist_node_is_empty(node))
+        return false;
+
+    list->first = node->next;
+
+    *r = *node;
+    pdlist_node_zero(node);
+
+    struct pdlist_node * last = pdlist_find_last(list);
+
+    last->next = node;
+    node->next = NULL;
+    node->prev = last;
+
+    return true;
+}
+
 static void
 pdlist_nodes_free(struct pdlist_node * node)
 {

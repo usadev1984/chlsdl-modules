@@ -30,6 +30,9 @@ extern bool
 pdlist_push(struct pdlist * list, const void * data,
     enum pdlist_node_priority priority);
 
+extern bool
+pdlist_pop(struct pdlist * list, struct pdlist_node * r);
+
 extern void
 pdlist_destroy(struct pdlist * pdlist);
 
