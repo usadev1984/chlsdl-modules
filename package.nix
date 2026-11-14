@@ -35,6 +35,10 @@ stdenv.mkDerivation rec {
     curl.dev
   ];
 
+  nativeBuildInputs = with pkgs; [
+    pkg-config
+  ];
+
   buildInputs = with pkgs; [
     libX11
     libxmu
