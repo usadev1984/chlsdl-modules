@@ -4,6 +4,7 @@
   pkgs,
   isDebug ? false,
   enableColor ? false,
+  enableLibnotify ? false,
   ...
 }:
 
@@ -52,6 +53,7 @@ stdenv.mkDerivation rec {
         (if isDebug then "debug_libchlsdl-common" else "libchlsdl-common")
       ]
       ++ lib.optionals enableColor [ "COLOR=1" ]
+      ++ lib.optionals enableLibnotify [ "LIBNOTIFY=1" ]
     )
     + "\n" + lib.concatStringsSep " " (
       [
@@ -59,6 +61,7 @@ stdenv.mkDerivation rec {
         (if isDebug then "debug_modules" else "modules")
       ]
       ++ lib.optionals enableColor [ "COLOR=1" ]
+      ++ lib.optionals enableLibnotify [ "LIBNOTIFY=1" ]
     );
 
   # buildPhase = ''
