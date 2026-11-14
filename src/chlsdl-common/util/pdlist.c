@@ -196,7 +196,13 @@ pdlist_push(
 
     struct pdlist_node * next_node
         = pdlist_node_first_lower_priority(node, priority);
-    assert(next_node);
+    if (!next_node) { /* HACK: we should resize at one place only */
+        print_debug_warn("resizing\n");
+        if (!pdlist_resize(list, list->size, NULL))
+            return false;
+        next_node = pdlist_node_first_lower_priority(node, priority);
+        assert(next_node);
+    }
 
     if (pdlist_node_is_empty(next_node)) {
         next_node->data     = (void *)data;
