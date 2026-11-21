@@ -3,10 +3,12 @@
 #include <chlsdl-modules/chlsdl-common/util/files.h>
 
 #include <assert.h>
+#include <errno.h>
 #include <openssl/crypto.h>
 #include <openssl/evp.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 EVP_MD_CTX *   g_md_ctx;
@@ -69,4 +71,24 @@ md5sum_verify(size_t n, const void * data, const char * md5)
 #endif
 
     return memcmp(sum, hex, sizeof(sum)) == 0;
+}
+
+bool
+mymkdir_args(const char * path, int mode)
+{
+    const char * sep = path;
+    if (mode == 0)
+        mode = S_IRWXU | (S_IRGRP | S_IXGRP);
+
+    do {
+        sep = strchrnul(sep + 1, '/');
+        char nextpath[PATH_MAX];
+        snprintf(nextpath, (int)(sep - path) + 1, "%s", path);
+
+        print_debug_warn("creating: '%s'\n", nextpath);
+        if (mkdir(nextpath, mode) == -1 && errno != EEXIST) {
+            return false;
+        }
+    } while (*sep != '\0');
+    return true;
 }
