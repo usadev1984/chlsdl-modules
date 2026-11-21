@@ -208,7 +208,7 @@ danbooru_init(const struct chlsdl_data * cdata)
 
     module_downloads_dir = svconcat("%s/danbooru", cdata->downloads_dir);
 
-    if (mkdir(module_downloads_dir, S_IRWXU | S_IRGRP) == -1 && errno != EEXIST)
+    if (!mymkdir(module_downloads_dir))
         assert(0);
 
     g_whitespace_pattern = pcre2_compile((PCRE2_SPTR8) "\r\n",

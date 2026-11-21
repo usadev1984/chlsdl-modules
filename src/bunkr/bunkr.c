@@ -65,7 +65,7 @@ bunkr_init(const struct chlsdl_data * cdata)
     assert(g_libbunkr.regex.md);
 
     module_downloads_dir = svconcat("%s/bunkr", cdata->downloads_dir);
-    if (mkdir(module_downloads_dir, S_IRWXU | S_IRGRP) == -1 && errno != EEXIST)
+    if (!mymkdir(module_downloads_dir))
         assert(0);
 
     default_notification_timeout = cdata->default_notification_timeout;

@@ -49,7 +49,7 @@ gelbooru_init(const struct chlsdl_data * cdata)
 
     module_downloads_dir = svconcat("%s/gelbooru", cdata->downloads_dir);
 
-    if (mkdir(module_downloads_dir, S_IRWXU | S_IRGRP) == -1 && errno != EEXIST)
+    if (!mymkdir(module_downloads_dir))
         assert(0);
 
     default_notification_timeout = cdata->default_notification_timeout;
